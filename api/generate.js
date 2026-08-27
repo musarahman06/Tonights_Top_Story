@@ -71,33 +71,6 @@ function extractJson(raw) {
   return JSON.parse(cleaned);
 }
 
-async function generateImage(prompt) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-    }),
-  });
-
-  const data = await response.json();
-  if (data.error) throw new Error(data.error.message || "Image generation error");
-
-  const parts = data.candidates?.[0]?.content?.parts || [];
-  const imagePart = parts.find((p) => p.inlineData);
-  if (!imagePart) {
-    // Log the raw shape so we can see in Vercel's logs what actually came back
-    // instead of guessing — this is temporary for debugging.
-    console.error("No image part in Gemini response:", JSON.stringify(data).slice(0, 800));
-    return null;
-  }
-
-  return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
-}
-
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST." });
 
@@ -148,18 +121,11 @@ Respond with ONLY valid JSON, no markdown code fences, no extra commentary, in e
         parsed = { headline: "Tonight's Broadcast", main: raw, sidebars: [] };
       }
 
-      // Generate a custom image matching this specific story. If it fails
-      // for any reason, we still show the broadcast (with the fallback photo)
-      // instead of breaking the whole thing — but we surface the reason in
-      // imageError so we can actually see what went wrong, temporarily.
-      try {
-        const imagePrompt = `Cinematic, moody, dramatic lighting, dark background with red accent lighting, photographic style, high contrast, no text, no logos, no readable words in the image, 16:9. Scene: ${persona.imageScene}, symbolically representing this headline: "${parsed.headline}"`;
-        parsed.image = await generateImage(imagePrompt);
-        if (!parsed.image) parsed.imageError = "No image returned by the model — check Vercel logs for the raw response.";
-      } catch (e) {
-        parsed.image = null;
-        parsed.imageError = e.message || "Unknown image generation error";
-      }
+      // Note: AI image generation was tried here but Gemini's image model
+      // (gemini-2.5-flash-image) currently returns a "quota limit: 0" error
+      // even on billed accounts — a known issue on Google's side as of
+      // writing, not something fixable in this code. Sticking with the
+      // fixed per-channel photos instead, which are reliable and free.
 
       return res.status(200).json(parsed);
     }
