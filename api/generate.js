@@ -64,7 +64,16 @@ export default async function handler(req, res) {
       const persona = PERSONAS[tier] || PERSONAS.sportscenter;
       const intensityLine = INTENSITY[intensity] || INTENSITY.medium;
       const systemInstruction = `Read the full conversation below — it's someone describing their day, possibly with screenshots attached. Write ONE short broadcast segment (150–250 words) based on what actually happened in it, in this persona:\n\n${persona}\n\n${intensityLine}\n\nOutput only the finished segment, nothing else.`;
-      const story = await callGemini(systemInstruction, historyToGeminiContents(history));
+
+      // Gemini requires the conversation to end on a "user" turn — the chat
+      // history often ends with the AI's last follow-up question instead,
+      // so we always close with an explicit instruction turn.
+      const contents = [
+        ...historyToGeminiContents(history),
+        { role: "user", parts: [{ text: "Now write the broadcast segment based on everything above." }] },
+      ];
+
+      const story = await callGemini(systemInstruction, contents);
       return res.status(200).json({ story });
     }
 
