@@ -85,11 +85,12 @@
   .article-meta { font-size: 12px; color: var(--ink-dim); margin-bottom: 16px; }
   .article-meta .chan { color: var(--red); font-weight: 700; }
   .article-text { font-family: 'Merriweather', serif; font-size: 16px; line-height: 1.8; color: #d6d6da; white-space: pre-wrap; }
+  .article-placeholder { padding: 30px 4px; text-align: center; color: var(--ink-dim); font-size: 13.5px; }
+
   .sidebar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 22px; }
   .sidebar-box { background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
   .sidebar-box .sb-label { font-size: 10.5px; font-weight: 800; color: var(--red); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
   .sidebar-box .sb-text { font-size: 13px; line-height: 1.55; color: #c7c7cc; }
-  .article-placeholder { padding: 30px 4px; text-align: center; color: var(--ink-dim); font-size: 13.5px; }
 
   .related-card {
     display: flex; gap: 14px; border-top: 1px solid var(--line); padding: 14px 0; cursor: pointer; align-items: center;
@@ -416,9 +417,6 @@
   function saveToHistory(storyObj, tier) {
     let history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
     history.unshift({ storyObj, tier, ts: Date.now() });
-    // AI-generated images are much bigger than text, so browser storage fills up
-    // faster than before — keep fewer entries, and drop the oldest ones first if
-    // saving fails because storage is full.
     history = history.slice(0, 15);
     try {
       localStorage.setItem('broadcastHistory', JSON.stringify(history));
@@ -456,8 +454,7 @@
     [...historyList.querySelectorAll('.delete-btn')].forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const idx = parseInt(btn.dataset.deleteIndex, 10);
-        deleteFromHistory(idx);
+        deleteFromHistory(parseInt(btn.dataset.deleteIndex, 10));
       });
     });
   }
