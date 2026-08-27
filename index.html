@@ -3,151 +3,193 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>THE DAILY BROADCAST</title>
+<title>The Daily Broadcast</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0d10; --panel: #14171c; --panel-2: #1b1f26;
-    --line: #262b33; --ink: #e9e7e1; --ink-dim: #8b92a0;
-    --accent: #e4572e; --accent-dim: #e4572e33;
+    --bg: #0a0a0c; --bg2: #0f0f13;
+    --red: #ff2d4d; --red-dim: #ff2d4d22;
+    --white: #ffffff; --ink-dim: #9a9ba3;
+    --line: #232329; --card: #131318;
   }
-  [data-tier="sportscenter"] { --accent: #e4572e; --accent-dim: #e4572e33; }
-  [data-tier="tmz"]          { --accent: #ffd23f; --accent-dim: #ffd23f33; }
-  [data-tier="naturedoc"]    { --accent: #6b8f71; --accent-dim: #6b8f7133; }
-  [data-tier="breakingnews"] { --accent: #d7263d; --accent-dim: #d7263d33; }
-  [data-tier="realitytv"]    { --accent: #b565d8; --accent-dim: #b565d833; }
-
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; }
+  html, body { margin: 0; }
   body {
-    background: var(--bg); color: var(--ink);
-    font-family: 'Oswald', sans-serif;
-    display: flex; flex-direction: column; min-height: 100vh;
+    background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif;
+    background-image: radial-gradient(ellipse 900px 500px at 50% -10%, #ff2d4d33, transparent 60%);
+    background-repeat: no-repeat;
   }
-  header {
-    display: flex; align-items: center; gap: 14px;
-    padding: 16px 24px; border-bottom: 1px solid var(--line); background: var(--panel);
-  }
-  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
-  header h1 { font-family: 'Anton', sans-serif; font-size: 20px; letter-spacing: 2px; margin: 0; text-transform: uppercase; }
-  header span { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-dim); letter-spacing: 1px; }
 
-  .layout { flex: 1; display: grid; grid-template-columns: 240px 1fr 280px; gap: 1px; background: var(--line); min-height: 0; }
-  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
-  .col { background: var(--bg); padding: 18px; overflow-y: auto; display: flex; flex-direction: column; }
+  header.site-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 32px; max-width: 1100px; margin: 0 auto; }
+  .wordmark { font-weight: 800; font-size: 16px; letter-spacing: -.2px; }
+  .wordmark span { color: var(--red); }
+  .top-right { display: flex; align-items: center; gap: 16px; }
+  .date-text { font-size: 12.5px; color: var(--ink-dim); }
+  .gear-btn { background: none; border: 1px solid var(--line); color: var(--ink-dim); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 14px; }
+  .gear-btn:hover { border-color: var(--red); color: var(--red); }
 
-  .section-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px;
-    color: var(--ink-dim); text-transform: uppercase; margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-label::before { content: ''; width: 6px; height: 6px; background: var(--accent); }
+  .hero { max-width: 780px; margin: 40px auto 0; padding: 0 32px; text-align: center; }
+  .hero .kicker { font-size: 12px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
+  .hero h1 { font-size: 46px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.08; margin: 0 0 16px; }
+  .hero p { color: var(--ink-dim); font-size: 15.5px; line-height: 1.6; max-width: 480px; margin: 0 auto; }
 
-  .channel-btn {
-    background: var(--panel); border: 1px solid var(--line); color: var(--ink-dim);
-    font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .5px;
-    text-transform: uppercase; padding: 12px 14px; text-align: left; cursor: pointer;
-    border-radius: 3px; margin-bottom: 8px; display: flex; justify-content: space-between; width: 100%;
+  nav.channels {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    max-width: 900px; margin: 30px auto 0; padding: 0 32px;
   }
-  .channel-btn:hover { border-color: var(--accent); color: var(--ink); }
-  .channel-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--ink); }
+  .chan-pill {
+    background: var(--card); border: 1px solid var(--line); color: var(--ink-dim);
+    padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+  .chan-pill .num { color: var(--red); font-weight: 700; margin-right: 6px; }
+  .chan-pill:hover { border-color: #3a3a42; color: var(--white); }
+  .chan-pill.active { background: var(--red); border-color: var(--red); color: var(--white); }
+  .chan-pill.active .num { color: var(--white); }
+
+  .page { max-width: 780px; margin: 0 auto; padding: 40px 32px 70px; }
+
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 26px; margin-bottom: 20px; }
+  .panel-label { font-size: 11.5px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+
+  .notes-log { border-top: 1px solid var(--line); margin-bottom: 4px; }
+  .note-entry { padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; line-height: 1.6; }
+  .note-entry.prompt { color: var(--ink-dim); font-style: italic; font-size: 13.5px; }
+  .note-entry img { max-width: 220px; border-radius: 10px; margin-top: 8px; display: block; }
+
+  .compose-row { display: flex; gap: 8px; align-items: flex-end; margin-top: 16px; }
+  .compose-row textarea {
+    flex: 1; min-height: 50px; max-height: 140px; background: var(--bg2); border: 1px solid var(--line);
+    color: var(--white); font-family: 'Inter', sans-serif; font-size: 14.5px; padding: 13px; border-radius: 12px; resize: vertical;
+  }
+  .compose-row textarea:focus { outline: 1px solid var(--red); }
+  .icon-btn {
+    background: var(--bg2); border: 1px solid var(--line); color: var(--ink-dim);
+    width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 15px; flex-shrink: 0;
+  }
+  .icon-btn:hover { border-color: var(--red); color: var(--red); }
+  .icon-btn.recording { background: var(--red); color: var(--white); border-color: var(--red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+  #imgPreviewName { font-size: 12px; color: var(--ink-dim); margin-top: 8px; }
 
   .go-live-btn {
-    width: 100%; background: var(--accent); color: #0b0d10;
-    font-family: 'Anton', sans-serif; font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
-    border: none; padding: 14px; border-radius: 3px; cursor: pointer; margin-top: 12px;
+    background: var(--red); color: var(--white); font-weight: 700; font-size: 14px;
+    border: none; padding: 14px 30px; border-radius: 999px; cursor: pointer; margin-top: 18px;
+    box-shadow: 0 8px 24px -8px #ff2d4d88;
   }
-  .go-live-btn:hover { filter: brightness(1.1); }
+  .go-live-btn:hover { filter: brightness(1.08); }
   .go-live-btn:disabled { opacity: .5; cursor: not-allowed; }
 
-  /* Chat column */
-  .chat-thread { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-  .msg { max-width: 85%; padding: 10px 14px; border-radius: 6px; font-size: 14px; line-height: 1.5; }
-  .msg img { max-width: 100%; border-radius: 4px; margin-top: 6px; display: block; }
-  .msg.user { align-self: flex-end; background: var(--accent-dim); border: 1px solid var(--accent); }
-  .msg.ai { align-self: flex-start; background: var(--panel); border: 1px solid var(--line); color: var(--ink); }
+  .article-photo { width: 100%; height: 240px; object-fit: cover; border-radius: 14px; display: block; margin-bottom: 20px; }
+  .article-body h2 { font-size: 24px; font-weight: 800; line-height: 1.25; margin: 0 0 8px; letter-spacing: -.4px; }
+  .article-meta { font-size: 12px; color: var(--ink-dim); margin-bottom: 16px; }
+  .article-meta .chan { color: var(--red); font-weight: 700; }
+  .article-text { font-family: 'Merriweather', serif; font-size: 16px; line-height: 1.8; color: #d6d6da; white-space: pre-wrap; }
+  .article-placeholder { padding: 30px 4px; text-align: center; color: var(--ink-dim); font-size: 13.5px; }
 
-  .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
-  .chat-input-row textarea {
-    flex: 1; min-height: 44px; max-height: 120px; background: var(--panel); border: 1px solid var(--line);
-    color: var(--ink); font-family: 'Oswald', sans-serif; font-size: 14px; padding: 10px; border-radius: 4px; resize: vertical;
+  .related-card {
+    display: flex; gap: 14px; border-top: 1px solid var(--line); padding: 14px 0; cursor: pointer; align-items: center;
   }
-  .chat-input-row textarea:focus { outline: 2px solid var(--accent); }
-  .icon-btn {
-    background: var(--panel); border: 1px solid var(--line); color: var(--ink-dim);
-    width: 44px; height: 44px; border-radius: 4px; cursor: pointer; font-size: 16px; flex-shrink: 0;
-  }
-  .icon-btn:hover { border-color: var(--accent); color: var(--ink); }
-  #imgPreviewName { font-size: 11px; color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
+  .related-card:hover .r-headline { color: var(--red); }
+  .related-card img { width: 84px; height: 62px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+  .related-card .r-headline { font-size: 14px; font-weight: 700; line-height: 1.35; margin-bottom: 4px; }
+  .related-card .r-meta { font-size: 11px; color: var(--ink-dim); }
+  .empty-note { color: var(--ink-dim); font-size: 13px; }
 
-  /* Story viewer */
-  .viewer {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
-    min-height: 200px; padding: 24px; margin-bottom: 12px;
-  }
-  .viewer-tag {
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--accent); border: 1px solid var(--accent); padding: 3px 8px; border-radius: 2px;
-    display: inline-block; margin-bottom: 14px;
-  }
-  .story-text { font-size: 16px; line-height: 1.6; white-space: pre-wrap; }
-  .placeholder { color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-
-  /* History */
-  .history-item {
-    background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent);
-    border-radius: 3px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
-  }
-  .h-tier { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-dim); letter-spacing: 1px; text-transform: uppercase; }
-  .h-preview { font-size: 13px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-  .empty-note { color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+  .overlay.open { display: flex; }
+  .settings-panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 26px; max-width: 440px; width: 100%; max-height: 85vh; overflow-y: auto; }
+  .settings-panel h2 { font-size: 19px; font-weight: 800; margin: 0 0 4px; }
+  .settings-panel .sub { color: var(--ink-dim); font-size: 13px; margin-bottom: 18px; }
+  .intensity-option { border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; margin-bottom: 9px; cursor: pointer; }
+  .intensity-option.selected { border-color: var(--red); background: var(--red-dim); }
+  .intensity-option .i-title { font-weight: 700; font-size: 13.5px; }
+  .intensity-option .i-desc { font-size: 12.5px; color: var(--ink-dim); margin-top: 4px; line-height: 1.5; }
+  .warning-box { background: #2a0f14; border: 1px solid var(--red); border-radius: 10px; padding: 9px 11px; font-size: 11.5px; color: #ff8ba0; margin-top: 8px; display: none; }
+  .voice-toggle-row { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; }
+  .close-settings { width: 100%; margin-top: 18px; background: var(--white); color: var(--bg); border: none; padding: 12px; border-radius: 999px; font-weight: 700; cursor: pointer; }
 </style>
 </head>
-<body data-tier="sportscenter">
+<body>
 
-<header>
-  <div class="dot"></div>
-  <h1>The Daily Broadcast</h1>
-  <span>CHAT ABOUT YOUR DAY — THEN GO LIVE</span>
+<header class="site-header">
+  <div class="wordmark">The Daily <span>Broadcast</span></div>
+  <div class="top-right">
+    <div class="date-text" id="todayDate"></div>
+    <button class="gear-btn" id="settingsBtn" title="Settings">⚙</button>
+  </div>
 </header>
 
-<div class="layout">
+<div class="hero">
+  <div class="kicker">Your Day, On The Air</div>
+  <h1>Turn today into tonight's top story.</h1>
+  <p>Tell it what happened — text, screenshots, or just talk. Pick a channel. Go live.</p>
+</div>
 
-  <!-- Channel selector -->
-  <div class="col">
-    <div class="section-label">Channel</div>
-    <div id="dial">
-      <button class="channel-btn active" data-tier="sportscenter">SportsCenter</button>
-      <button class="channel-btn" data-tier="tmz">TMZ Tabloid</button>
-      <button class="channel-btn" data-tier="naturedoc">Nature Doc</button>
-      <button class="channel-btn" data-tier="breakingnews">Breaking News</button>
-      <button class="channel-btn" data-tier="realitytv">Reality TV</button>
+<nav class="channels" id="dial">
+  <button class="chan-pill active" data-tier="sportscenter"><span class="num">01</span>SportsCenter</button>
+  <button class="chan-pill" data-tier="tmz"><span class="num">02</span>TMZ Tabloid</button>
+  <button class="chan-pill" data-tier="naturedoc"><span class="num">03</span>Nature Doc</button>
+  <button class="chan-pill" data-tier="breakingnews"><span class="num">04</span>Breaking News</button>
+  <button class="chan-pill" data-tier="realitytv"><span class="num">05</span>Reality TV</button>
+</nav>
+
+<div class="page">
+
+  <div class="panel">
+    <div class="panel-label">Today's Notes</div>
+    <div class="notes-log" id="notesLog"></div>
+    <div id="imgPreviewName"></div>
+    <div class="compose-row">
+      <textarea id="chatInput" placeholder="Start typing, or use the mic..."></textarea>
+      <button class="icon-btn" id="attachBtn" title="Attach screenshot">📎</button>
+      <input type="file" id="imgInput" accept="image/*" style="display:none">
+      <button class="icon-btn" id="micBtn" title="Voice input">🎤</button>
+      <button class="icon-btn" id="sendBtn" title="Add note">➤</button>
     </div>
     <button class="go-live-btn" id="goLiveBtn">Go Live</button>
   </div>
 
-  <!-- Chat -->
-  <div class="col">
-    <div class="section-label">Tell it about your day</div>
-    <div class="chat-thread" id="chatThread"></div>
-    <div id="imgPreviewName"></div>
-    <div class="chat-input-row">
-      <button class="icon-btn" id="attachBtn" title="Attach screenshot">📎</button>
-      <input type="file" id="imgInput" accept="image/*" style="display:none">
-      <textarea id="chatInput" placeholder="Type here..."></textarea>
-      <button class="icon-btn" id="sendBtn" title="Send">➤</button>
+  <div class="panel">
+    <div class="panel-label">On Air</div>
+    <div id="articleInner">
+      <div class="article-placeholder">No broadcast yet — add some notes above and hit Go Live.</div>
     </div>
   </div>
 
-  <!-- Broadcast + history -->
-  <div class="col">
-    <div class="section-label">On air</div>
-    <div class="viewer" id="viewer"><div class="placeholder">Chat a bit, then hit Go Live.</div></div>
-    <div class="section-label">Past broadcasts</div>
+  <div class="panel">
+    <div class="panel-label">Past Broadcasts</div>
     <div id="historyList"></div>
   </div>
 
+</div>
+
+<div class="overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <h2>Settings</h2>
+    <div class="sub">Choose how sharp the humor gets.</div>
+
+    <div class="intensity-option" data-level="low">
+      <div class="i-title">Low</div>
+      <div class="i-desc">Warm and wholesome. Playful, no edge, safe to show anyone.</div>
+    </div>
+    <div class="intensity-option" data-level="medium">
+      <div class="i-title">Medium</div>
+      <div class="i-desc">Light teasing and sarcasm, still friendly overall.</div>
+    </div>
+    <div class="intensity-option" data-level="high">
+      <div class="i-title">High</div>
+      <div class="i-desc">Sharper, near-the-line roasting humor.</div>
+      <div class="warning-box" id="highWarning">⚠ Heads up: High can include edgy, teasing jokes at your own expense. It still won't target real people cruelly or punch at anyone else — just turned up on you.</div>
+    </div>
+
+    <div class="voice-toggle-row">
+      <span>Read broadcast aloud</span>
+      <input type="checkbox" id="readAloudToggle" style="width:18px; height:18px;">
+    </div>
+
+    <button class="close-settings" id="closeSettings">Done</button>
+  </div>
 </div>
 
 <script>
@@ -155,29 +197,71 @@
     sportscenter: 'SPORTSCENTER', tmz: 'TMZ TABLOID', naturedoc: 'NATURE DOC',
     breakingnews: 'BREAKING NEWS', realitytv: 'REALITY TV',
   };
+  const CHANNEL_IMAGES = {
+    sportscenter: 'images/Cinematic_wide_shot_of_an_empty_sports_arena_at_night_dramat.jpg',
+    tmz: 'images/Cinematic_night_scene_of_a_red_carpet_event_from_a_low_angle.jpg',
+    naturedoc: 'images/Cinematic_moody_shot_of_a_misty_forest_at_dawn_a_single_silh.jpg',
+    breakingnews: 'images/Cinematic_wide_shot_of_a_dark_newsroom_control_room_rows_of.jpg',
+    realitytv: 'images/Cinematic_shot_of_an_empty_confessional_interview_chair_lit.jpg',
+  };
+  function photoFor(tier) { return CHANNEL_IMAGES[tier] || CHANNEL_IMAGES.sportscenter; }
+  function thumbFor(tier) { return CHANNEL_IMAGES[tier] || CHANNEL_IMAGES.sportscenter; }
 
   let currentTier = 'sportscenter';
-  let conversation = []; // { role: 'user'|'ai', text, imageBase64? }
+  let conversation = [];
   let pendingImage = null;
+  let satireLevel = localStorage.getItem('satireLevel') || 'medium';
+  let readAloud = localStorage.getItem('readAloud') === 'true';
 
-  const body = document.body;
   const dial = document.getElementById('dial');
-  const chatThread = document.getElementById('chatThread');
+  const notesLog = document.getElementById('notesLog');
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
+  const micBtn = document.getElementById('micBtn');
   const attachBtn = document.getElementById('attachBtn');
   const imgInput = document.getElementById('imgInput');
   const imgPreviewName = document.getElementById('imgPreviewName');
   const goLiveBtn = document.getElementById('goLiveBtn');
-  const viewer = document.getElementById('viewer');
+  const articleInner = document.getElementById('articleInner');
   const historyList = document.getElementById('historyList');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  const closeSettings = document.getElementById('closeSettings');
+  const readAloudToggle = document.getElementById('readAloudToggle');
+  const todayDate = document.getElementById('todayDate');
+
+  todayDate.textContent = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 
   dial.addEventListener('click', (e) => {
-    const btn = e.target.closest('.channel-btn');
+    const btn = e.target.closest('.chan-pill');
     if (!btn) return;
     currentTier = btn.dataset.tier;
-    body.setAttribute('data-tier', currentTier);
     [...dial.children].forEach(c => c.classList.toggle('active', c === btn));
+  });
+
+  settingsBtn.addEventListener('click', () => settingsOverlay.classList.add('open'));
+  closeSettings.addEventListener('click', () => settingsOverlay.classList.remove('open'));
+  settingsOverlay.addEventListener('click', (e) => { if (e.target === settingsOverlay) settingsOverlay.classList.remove('open'); });
+
+  function paintIntensityOptions() {
+    document.querySelectorAll('.intensity-option').forEach(el => {
+      el.classList.toggle('selected', el.dataset.level === satireLevel);
+    });
+    document.getElementById('highWarning').style.display = satireLevel === 'high' ? 'block' : 'none';
+  }
+  document.querySelectorAll('.intensity-option').forEach(el => {
+    el.addEventListener('click', () => {
+      satireLevel = el.dataset.level;
+      localStorage.setItem('satireLevel', satireLevel);
+      paintIntensityOptions();
+    });
+  });
+  paintIntensityOptions();
+
+  readAloudToggle.checked = readAloud;
+  readAloudToggle.addEventListener('change', () => {
+    readAloud = readAloudToggle.checked;
+    localStorage.setItem('readAloud', readAloud);
   });
 
   attachBtn.addEventListener('click', () => imgInput.click());
@@ -190,10 +274,54 @@
     reader.readAsDataURL(file);
   });
 
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognizer = null;
+  let isRecording = false;
+  if (SpeechRecognition) {
+    recognizer = new SpeechRecognition();
+    recognizer.continuous = false;
+    recognizer.interimResults = false;
+    recognizer.lang = 'en-US';
+    recognizer.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      chatInput.value = (chatInput.value + ' ' + transcript).trim();
+    };
+    recognizer.onend = () => { isRecording = false; micBtn.classList.remove('recording'); };
+    recognizer.onerror = () => { isRecording = false; micBtn.classList.remove('recording'); };
+  }
+  micBtn.addEventListener('click', () => {
+    if (!recognizer) { alert("Voice input isn't supported in this browser — try Chrome."); return; }
+    if (isRecording) { recognizer.stop(); return; }
+    isRecording = true;
+    micBtn.classList.add('recording');
+    recognizer.start();
+  });
+
+  function speak(text) {
+    if (!readAloud || !window.speechSynthesis) return;
+    const utter = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utter);
+  }
+
   sendBtn.addEventListener('click', sendMessage);
   chatInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
+
+  function addNoteEntry(text, cls, imageBase64) {
+    const el = document.createElement('div');
+    el.className = 'note-entry ' + cls;
+    const t = document.createElement('div');
+    t.textContent = text;
+    el.appendChild(t);
+    if (imageBase64) {
+      const img = document.createElement('img');
+      img.src = 'data:image/jpeg;base64,' + imageBase64;
+      el.appendChild(img);
+    }
+    notesLog.appendChild(el);
+    return el;
+  }
 
   async function sendMessage() {
     const text = chatInput.value.trim();
@@ -201,15 +329,14 @@
 
     const userMsg = { role: 'user', text, imageBase64: pendingImage };
     conversation.push(userMsg);
-    renderMessage(userMsg);
+    addNoteEntry(text, 'yours', pendingImage);
 
     chatInput.value = '';
-    const imageSent = pendingImage;
     pendingImage = null;
     imgPreviewName.textContent = '';
     imgInput.value = '';
 
-    const thinkingEl = renderMessage({ role: 'ai', text: 'typing...' });
+    const thinkingEl = addNoteEntry('...', 'prompt');
 
     try {
       const res = await fetch('/api/generate', {
@@ -218,76 +345,55 @@
         body: JSON.stringify({ mode: 'chat', history: conversation }),
       });
       const data = await res.json();
-      thinkingEl.querySelector('.msg') ? null : null;
       const reply = data.error ? ('Error: ' + data.error) : data.reply;
       thinkingEl.remove();
       const aiMsg = { role: 'ai', text: reply };
       conversation.push(aiMsg);
-      renderMessage(aiMsg);
+      addNoteEntry(reply, 'prompt');
+      speak(reply);
     } catch (err) {
       thinkingEl.remove();
-      renderMessage({ role: 'ai', text: "Couldn't reach the model. Try again." });
+      addNoteEntry("Couldn't reach the model. Try again.", 'prompt');
     }
-  }
-
-  function renderMessage(msg) {
-    const wrap = document.createElement('div');
-    wrap.className = 'msg ' + (msg.role === 'user' ? 'user' : 'ai');
-    const textEl = document.createElement('div');
-    textEl.textContent = msg.text;
-    wrap.appendChild(textEl);
-    if (msg.imageBase64) {
-      const img = document.createElement('img');
-      img.src = 'data:image/jpeg;base64,' + msg.imageBase64;
-      wrap.appendChild(img);
-    }
-    chatThread.appendChild(wrap);
-    chatThread.scrollTop = chatThread.scrollHeight;
-    return wrap;
   }
 
   goLiveBtn.addEventListener('click', async () => {
-    if (conversation.length === 0) {
-      alert('Chat a little about your day first.');
-      return;
-    }
+    if (conversation.length === 0) { alert('Add a note about your day first.'); return; }
     goLiveBtn.disabled = true;
-    goLiveBtn.textContent = 'GOING LIVE...';
-    viewer.innerHTML = '<div class="placeholder">Producing segment...</div>';
+    goLiveBtn.textContent = 'Going live...';
+    articleInner.innerHTML = '<div class="article-placeholder">Producing segment...</div>';
 
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'broadcast', history: conversation, tier: currentTier }),
+        body: JSON.stringify({ mode: 'broadcast', history: conversation, tier: currentTier, intensity: satireLevel }),
       });
       const data = await res.json();
-      if (data.error) {
-        viewer.innerHTML = `<div class="placeholder">Failed: ${data.error}</div>`;
-        return;
-      }
-      renderStory(data.story, currentTier);
+      if (data.error) { articleInner.innerHTML = `<div class="article-placeholder">Failed: ${data.error}</div>`; return; }
+      renderArticle(data.story, currentTier);
       saveToHistory(data.story, currentTier);
+      speak(data.story);
     } catch (err) {
-      viewer.innerHTML = '<div class="placeholder">Could not reach the broadcast desk.</div>';
+      articleInner.innerHTML = '<div class="article-placeholder">Could not reach the broadcast desk.</div>';
     } finally {
       goLiveBtn.disabled = false;
       goLiveBtn.textContent = 'Go Live';
     }
   });
 
-  function renderStory(story, tier) {
-    viewer.innerHTML = `
-      <div class="viewer-tag">${CHANNEL_LABELS[tier]}</div>
-      <div class="story-text">${escapeHtml(story)}</div>
+  function renderArticle(story, tier, variant) {
+    const headline = story.split('\n')[0].slice(0, 80);
+    articleInner.innerHTML = `
+      <img class="article-photo" src="${photoFor(tier)}" alt="">
+      <div class="article-body">
+        <h2>${escapeHtml(headline)}</h2>
+        <div class="article-meta"><span class="chan">${CHANNEL_LABELS[tier]}</span> · Just now</div>
+        <div class="article-text">${escapeHtml(story)}</div>
+      </div>
     `;
   }
-
-  function escapeHtml(s) {
-    const d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
-  }
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
   function saveToHistory(story, tier) {
     const history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
@@ -295,24 +401,21 @@
     localStorage.setItem('broadcastHistory', JSON.stringify(history.slice(0, 50)));
     renderHistory();
   }
-
   function renderHistory() {
     const history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
-    if (history.length === 0) {
-      historyList.innerHTML = '<div class="empty-note">No past broadcasts yet.</div>';
-      return;
-    }
+    if (history.length === 0) { historyList.innerHTML = '<div class="empty-note">No past broadcasts yet.</div>'; return; }
     historyList.innerHTML = history.map((item, i) => `
-      <div class="history-item" data-index="${i}">
-        <div class="h-tier">${CHANNEL_LABELS[item.tier]} · ${new Date(item.ts).toLocaleDateString()}</div>
-        <div class="h-preview">${escapeHtml(item.story.slice(0, 100))}</div>
-      </div>
-    `).join('');
+      <div class="related-card" data-index="${i}">
+        <img src="${thumbFor(item.tier)}" alt="">
+        <div>
+          <div class="r-headline">${escapeHtml(item.story.split('\\n')[0].slice(0, 60))}</div>
+          <div class="r-meta">${CHANNEL_LABELS[item.tier]} · ${new Date(item.ts).toLocaleDateString()}</div>
+        </div>
+      </div>`).join('');
     [...historyList.children].forEach((el, i) => {
-      el.addEventListener('click', () => renderStory(history[i].story, history[i].tier));
+      el.addEventListener('click', () => renderArticle(history[i].story, history[i].tier, i));
     });
   }
-
   renderHistory();
 </script>
 </body>

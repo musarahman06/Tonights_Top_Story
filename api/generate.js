@@ -3,11 +3,17 @@
 // as a Vercel environment variable — never in the frontend code.
 
 const PERSONAS = {
-  sportscenter: `High-energy sports anchor doing a nightly recap. Confident, punchy, present-tense excitement. Frame the day's events as a game: a bold headline, play-by-play commentary, a "final score," and a "Player of the Day" callout. Sports vocabulary: comeback, upset, overtime, MVP, clutch. Fun, never mean.`,
-  tmz: `Breathless tabloid gossip writer. Dramatic, conspiratorial: "sources say," "we've learned exclusively." Treat mundane events as scandalous breaking gossip. Petty and over-the-top, but affectionate, not cruel.`,
+  sportscenter: `High-energy sports anchor doing a nightly recap. Confident, punchy, present-tense excitement. Frame the day's events as a game: a bold headline, play-by-play commentary, a "final score," and a "Player of the Day" callout. Sports vocabulary: comeback, upset, overtime, MVP, clutch.`,
+  tmz: `Breathless tabloid gossip writer. Dramatic, conspiratorial: "sources say," "we've learned exclusively." Treat mundane events as scandalous breaking gossip.`,
   naturedoc: `Calm, dry nature documentary narrator (Attenborough-style). Refer to the person in third person as a specimen in its "natural habitat." Describe ordinary events with the overly serious gravity of a wildlife survival story. No exclamation points.`,
-  breakingnews: `24-hour cable news anchor cutting to a "breaking" story. Urgent, red-alert energy, short punchy sentences, "developing story," fake expert soundbites. Treat small events with wildly disproportionate seriousness. End with a teaser for "more at 11."`,
-  realitytv: `Reality TV confessional cutaway. First person, as if speaking into a handheld camera mid-season. Petty, dramatic, self-aware. Frame small daily moments as season-defining drama. End on a dramatic teaser line.`,
+  breakingnews: `24-hour cable news anchor cutting to a "breaking" story. Urgent, red-alert energy, short punchy sentences, "developing story," fake expert soundbites. End with a teaser for "more at 11."`,
+  realitytv: `Reality TV confessional cutaway. First person, as if speaking into a handheld camera mid-season. Petty, dramatic, self-aware. End on a dramatic teaser line.`,
+};
+
+const INTENSITY = {
+  low: `Tone: warm and wholesome. Playful, gentle, zero edge — safe to show anyone, including family.`,
+  medium: `Tone: light teasing and sarcasm, still fundamentally friendly and good-natured.`,
+  high: `Tone: sharper, near-the-line roasting humor directed at the user's own choices and day — but never cruel, never targets anyone's identity or protected traits, and never actually demeaning. Think "friends who roast each other," not an insult.`,
 };
 
 async function callGemini(systemInstruction, contents) {
@@ -42,7 +48,7 @@ function historyToGeminiContents(history) {
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST." });
 
-  const { mode, history, tier } = req.body || {};
+  const { mode, history, tier, intensity } = req.body || {};
   if (!history || history.length === 0) {
     return res.status(400).json({ error: "No conversation yet." });
   }
@@ -56,7 +62,8 @@ export default async function handler(req, res) {
 
     if (mode === "broadcast") {
       const persona = PERSONAS[tier] || PERSONAS.sportscenter;
-      const systemInstruction = `Read the full conversation below — it's someone describing their day, possibly with screenshots attached. Write ONE short broadcast segment (150–250 words) based on what actually happened in it, in this persona:\n\n${persona}\n\nOutput only the finished segment, nothing else.`;
+      const intensityLine = INTENSITY[intensity] || INTENSITY.medium;
+      const systemInstruction = `Read the full conversation below — it's someone describing their day, possibly with screenshots attached. Write ONE short broadcast segment (150–250 words) based on what actually happened in it, in this persona:\n\n${persona}\n\n${intensityLine}\n\nOutput only the finished segment, nothing else.`;
       const story = await callGemini(systemInstruction, historyToGeminiContents(history));
       return res.status(200).json({ story });
     }
