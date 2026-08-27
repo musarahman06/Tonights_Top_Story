@@ -96,8 +96,14 @@
   }
   .related-card:hover .r-headline { color: var(--red); }
   .related-card img { width: 84px; height: 62px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+  .related-card .r-info { flex: 1; min-width: 0; }
   .related-card .r-headline { font-size: 14px; font-weight: 700; line-height: 1.35; margin-bottom: 4px; }
   .related-card .r-meta { font-size: 11px; color: var(--ink-dim); }
+  .delete-btn {
+    background: none; border: 1px solid var(--line); color: var(--ink-dim);
+    width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 13px; flex-shrink: 0;
+  }
+  .delete-btn:hover { border-color: var(--red); color: var(--red); }
   .empty-note { color: var(--ink-dim); font-size: 13px; }
 
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
@@ -393,8 +399,10 @@
         <div class="sb-text">${escapeHtml(sb.text || '')}</div>
       </div>`).join('');
 
+    const imgSrc = storyObj.image || photoFor(tier);
+
     articleInner.innerHTML = `
-      <img class="article-photo" src="${photoFor(tier)}" alt="">
+      <img class="article-photo" src="${imgSrc}" alt="">
       <div class="article-body">
         <h2>${escapeHtml(storyObj.headline || '')}</h2>
         <div class="article-meta"><span class="chan">${CHANNEL_LABELS[tier]}</span> · Just now</div>
@@ -406,9 +414,24 @@
   function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
   function saveToHistory(storyObj, tier) {
-    const history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
+    let history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
     history.unshift({ storyObj, tier, ts: Date.now() });
-    localStorage.setItem('broadcastHistory', JSON.stringify(history.slice(0, 50)));
+    // AI-generated images are much bigger than text, so browser storage fills up
+    // faster than before — keep fewer entries, and drop the oldest ones first if
+    // saving fails because storage is full.
+    history = history.slice(0, 15);
+    try {
+      localStorage.setItem('broadcastHistory', JSON.stringify(history));
+    } catch (e) {
+      history = history.slice(0, 5);
+      try { localStorage.setItem('broadcastHistory', JSON.stringify(history)); } catch (e2) { /* give up quietly */ }
+    }
+    renderHistory();
+  }
+  function deleteFromHistory(index) {
+    const history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
+    history.splice(index, 1);
+    localStorage.setItem('broadcastHistory', JSON.stringify(history));
     renderHistory();
   }
   function renderHistory() {
@@ -416,14 +439,26 @@
     if (history.length === 0) { historyList.innerHTML = '<div class="empty-note">No past broadcasts yet.</div>'; return; }
     historyList.innerHTML = history.map((item, i) => `
       <div class="related-card" data-index="${i}">
-        <img src="${thumbFor(item.tier)}" alt="">
-        <div>
+        <img src="${(item.storyObj && item.storyObj.image) || thumbFor(item.tier)}" alt="">
+        <div class="r-info">
           <div class="r-headline">${escapeHtml((item.storyObj && item.storyObj.headline) || '')}</div>
           <div class="r-meta">${CHANNEL_LABELS[item.tier]} · ${new Date(item.ts).toLocaleDateString()}</div>
         </div>
+        <button class="delete-btn" data-delete-index="${i}" title="Delete">✕</button>
       </div>`).join('');
-    [...historyList.children].forEach((el, i) => {
-      el.addEventListener('click', () => renderArticle(history[i].storyObj, history[i].tier));
+
+    [...historyList.querySelectorAll('.related-card')].forEach((el, i) => {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.delete-btn')) return;
+        renderArticle(history[i].storyObj, history[i].tier);
+      });
+    });
+    [...historyList.querySelectorAll('.delete-btn')].forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.dataset.deleteIndex, 10);
+        deleteFromHistory(idx);
+      });
     });
   }
   renderHistory();
