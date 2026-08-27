@@ -3,11 +3,26 @@
 // as a Vercel environment variable — never in the frontend code.
 
 const PERSONAS = {
-  sportscenter: `High-energy sports anchor doing a nightly recap. Confident, punchy, present-tense excitement. Frame the day's events as a game: a bold headline, play-by-play commentary, a "final score," and a "Player of the Day" callout. Sports vocabulary: comeback, upset, overtime, MVP, clutch.`,
-  tmz: `Breathless tabloid gossip writer. Dramatic, conspiratorial: "sources say," "we've learned exclusively." Treat mundane events as scandalous breaking gossip.`,
-  naturedoc: `Calm, dry nature documentary narrator (Attenborough-style). Refer to the person in third person as a specimen in its "natural habitat." Describe ordinary events with the overly serious gravity of a wildlife survival story. No exclamation points.`,
-  breakingnews: `24-hour cable news anchor cutting to a "breaking" story. Urgent, red-alert energy, short punchy sentences, "developing story," fake expert soundbites. End with a teaser for "more at 11."`,
-  realitytv: `Reality TV confessional cutaway. First person, as if speaking into a handheld camera mid-season. Petty, dramatic, self-aware. End on a dramatic teaser line.`,
+  sportscenter: {
+    voice: `High-energy sports anchor doing a nightly recap. Confident, punchy, present-tense excitement. Frame the day's events as a game: comeback, upset, overtime, MVP, clutch. Invent a plausible "final score," a nickname for the person, and quote-style soundbites — the kind of specific, vivid detail a real broadcast has, not a summary of what happened.`,
+    sidebarHint: `Pick 2-3 of: INJURY REPORT (a real-life friction point in their day framed as a status like Questionable/Doubtful/Probable, with a fake "return timeline"), TRANSACTION WIRE (a one-line "trade" or "signing" joke about something from their day), BY THE NUMBERS (2-3 invented but plausible stats), POWER RANKINGS (where today ranks against a fictional recent streak).`,
+  },
+  tmz: {
+    voice: `Breathless tabloid gossip writer. Dramatic, conspiratorial: "sources say," "we've learned exclusively," "insiders close to the situation." Invent a specific "insider" detail, a dramatic exclusive-photo-caption style line, and treat mundane events as scandal.`,
+    sidebarHint: `Pick 2-3 of: SOURCES SAY (an invented quote from an "insider"), SPOTTED (a paparazzi-style caption of a specific moment), EXCLUSIVE (one juicy invented detail), WHAT WE'VE LEARNED (a follow-up tidbit).`,
+  },
+  naturedoc: {
+    voice: `Calm, dry nature documentary narrator (Attenborough-style). Third person, treats the person as a specimen in its "natural habitat." Invent specific, deadpan pseudo-scientific detail — a fake Latin-sounding behavioral term, a "migration pattern," a subspecies classification joke.`,
+    sidebarHint: `Pick 2-3 of: FIELD NOTES (a specific deadpan observation), CONSERVATION STATUS (a joke classification like "Vulnerable" or "Least Concerned"), BEHAVIORAL OBSERVATION (one invented ritual/pattern noticed today).`,
+  },
+  breakingnews: {
+    voice: `24-hour cable news anchor cutting to a "breaking" story. Urgent, red-alert energy, short punchy sentences, invented expert soundbites, a fake developing-story angle with wildly disproportionate stakes for something small.`,
+    sidebarHint: `Pick 2-3 of: DEVELOPING (a one-line urgent update), BY THE NUMBERS (invented stats treated as alarming), WHAT WE KNOW (a bullet-style fact treated as breaking), EXPERT REACTION (a fake quoted "analyst").`,
+  },
+  realitytv: {
+    voice: `Reality TV confessional cutaway, first person, mid-season energy. Petty, dramatic, self-aware, invents a specific "storyline" framing for the day and a dramatic teaser line.`,
+    sidebarHint: `Pick 2-3 of: PREVIOUSLY ON (an invented callback to "earlier this season"), CAST CONFESSIONAL (a second short dramatic aside), NEXT TIME ON (a teaser for "tomorrow's episode").`,
+  },
 };
 
 const INTENSITY = {
@@ -45,6 +60,12 @@ function historyToGeminiContents(history) {
   });
 }
 
+function extractJson(raw) {
+  // Strip markdown code fences if the model added them despite instructions.
+  const cleaned = raw.replace(/^```json\s*/i, "").replace(/^```\s*/, "").replace(/```\s*$/, "").trim();
+  return JSON.parse(cleaned);
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST." });
 
@@ -63,18 +84,38 @@ export default async function handler(req, res) {
     if (mode === "broadcast") {
       const persona = PERSONAS[tier] || PERSONAS.sportscenter;
       const intensityLine = INTENSITY[intensity] || INTENSITY.medium;
-      const systemInstruction = `Read the full conversation below — it's someone describing their day, possibly with screenshots attached. Write ONE short broadcast segment (150–250 words) based on what actually happened in it, in this persona:\n\n${persona}\n\n${intensityLine}\n\nOutput only the finished segment, nothing else.`;
 
-      // Gemini requires the conversation to end on a "user" turn — the chat
-      // history often ends with the AI's last follow-up question instead,
-      // so we always close with an explicit instruction turn.
+      const systemInstruction = `Read the full conversation below — someone describing their day, possibly with screenshots attached.
+
+Do NOT simply restate or paraphrase what they said. Your job is to invent vivid, idiomatic, genre-specific embellishment — specific invented details, numbers, quotes, and framing that a real segment in this genre would have — while staying true to the real underlying facts of their day. Never invent a new real-world event that contradicts what they told you, only dramatize and stylize it.
+
+PERSONA VOICE:
+${persona.voice}
+
+${intensityLine}
+
+Produce THREE things:
+1. A punchy headline, under 12 words.
+2. A main segment, 180-260 words, in the persona voice above.
+3. Exactly 2-3 short sidebar items (20-40 words each), following this genre's typical secondary format: ${persona.sidebarHint}
+
+Respond with ONLY valid JSON, no markdown code fences, no extra commentary, in exactly this shape:
+{"headline": "string", "main": "string", "sidebars": [{"label": "string", "text": "string"}]}`;
+
       const contents = [
         ...historyToGeminiContents(history),
-        { role: "user", parts: [{ text: "Now write the broadcast segment based on everything above." }] },
+        { role: "user", parts: [{ text: "Now write the broadcast as instructed, as JSON only." }] },
       ];
 
-      const story = await callGemini(systemInstruction, contents);
-      return res.status(200).json({ story });
+      const raw = await callGemini(systemInstruction, contents);
+      let parsed;
+      try {
+        parsed = extractJson(raw);
+      } catch (e) {
+        // Fallback: if the model didn't return clean JSON, still show something.
+        parsed = { headline: "Tonight's Broadcast", main: raw, sidebars: [] };
+      }
+      return res.status(200).json(parsed);
     }
 
     return res.status(400).json({ error: "Unknown mode." });
