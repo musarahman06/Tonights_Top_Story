@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>THE DAILY BROADCAST</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0d10; --panel: #14171c; --panel-2: #1b1f26;
+    --line: #262b33; --ink: #e9e7e1; --ink-dim: #8b92a0;
+    --accent: #e4572e; --accent-dim: #e4572e33;
+  }
+  [data-tier="sportscenter"] { --accent: #e4572e; --accent-dim: #e4572e33; }
+  [data-tier="tmz"]          { --accent: #ffd23f; --accent-dim: #ffd23f33; }
+  [data-tier="naturedoc"]    { --accent: #6b8f71; --accent-dim: #6b8f7133; }
+  [data-tier="breakingnews"] { --accent: #d7263d; --accent-dim: #d7263d33; }
+  [data-tier="realitytv"]    { --accent: #b565d8; --accent-dim: #b565d833; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Oswald', sans-serif;
+    display: flex; flex-direction: column; min-height: 100vh;
+  }
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 24px; border-bottom: 1px solid var(--line); background: var(--panel);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  header h1 { font-family: 'Anton', sans-serif; font-size: 20px; letter-spacing: 2px; margin: 0; text-transform: uppercase; }
+  header span { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-dim); letter-spacing: 1px; }
+
+  .layout { flex: 1; display: grid; grid-template-columns: 240px 1fr 280px; gap: 1px; background: var(--line); min-height: 0; }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .col { background: var(--bg); padding: 18px; overflow-y: auto; display: flex; flex-direction: column; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 2px;
+    color: var(--ink-dim); text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::before { content: ''; width: 6px; height: 6px; background: var(--accent); }
+
+  .channel-btn {
+    background: var(--panel); border: 1px solid var(--line); color: var(--ink-dim);
+    font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: .5px;
+    text-transform: uppercase; padding: 12px 14px; text-align: left; cursor: pointer;
+    border-radius: 3px; margin-bottom: 8px; display: flex; justify-content: space-between; width: 100%;
+  }
+  .channel-btn:hover { border-color: var(--accent); color: var(--ink); }
+  .channel-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--ink); }
+
+  .go-live-btn {
+    width: 100%; background: var(--accent); color: #0b0d10;
+    font-family: 'Anton', sans-serif; font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
+    border: none; padding: 14px; border-radius: 3px; cursor: pointer; margin-top: 12px;
+  }
+  .go-live-btn:hover { filter: brightness(1.1); }
+  .go-live-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* Chat column */
+  .chat-thread { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+  .msg { max-width: 85%; padding: 10px 14px; border-radius: 6px; font-size: 14px; line-height: 1.5; }
+  .msg img { max-width: 100%; border-radius: 4px; margin-top: 6px; display: block; }
+  .msg.user { align-self: flex-end; background: var(--accent-dim); border: 1px solid var(--accent); }
+  .msg.ai { align-self: flex-start; background: var(--panel); border: 1px solid var(--line); color: var(--ink); }
+
+  .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+  .chat-input-row textarea {
+    flex: 1; min-height: 44px; max-height: 120px; background: var(--panel); border: 1px solid var(--line);
+    color: var(--ink); font-family: 'Oswald', sans-serif; font-size: 14px; padding: 10px; border-radius: 4px; resize: vertical;
+  }
+  .chat-input-row textarea:focus { outline: 2px solid var(--accent); }
+  .icon-btn {
+    background: var(--panel); border: 1px solid var(--line); color: var(--ink-dim);
+    width: 44px; height: 44px; border-radius: 4px; cursor: pointer; font-size: 16px; flex-shrink: 0;
+  }
+  .icon-btn:hover { border-color: var(--accent); color: var(--ink); }
+  #imgPreviewName { font-size: 11px; color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; margin-bottom: 6px; }
+
+  /* Story viewer */
+  .viewer {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 4px;
+    min-height: 200px; padding: 24px; margin-bottom: 12px;
+  }
+  .viewer-tag {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--accent); border: 1px solid var(--accent); padding: 3px 8px; border-radius: 2px;
+    display: inline-block; margin-bottom: 14px;
+  }
+  .story-text { font-size: 16px; line-height: 1.6; white-space: pre-wrap; }
+  .placeholder { color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* History */
+  .history-item {
+    background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+    border-radius: 3px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+  }
+  .h-tier { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-dim); letter-spacing: 1px; text-transform: uppercase; }
+  .h-preview { font-size: 13px; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .empty-note { color: var(--ink-dim); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+</style>
+</head>
+<body data-tier="sportscenter">
+
+<header>
+  <div class="dot"></div>
+  <h1>The Daily Broadcast</h1>
+  <span>CHAT ABOUT YOUR DAY — THEN GO LIVE</span>
+</header>
+
+<div class="layout">
+
+  <!-- Channel selector -->
+  <div class="col">
+    <div class="section-label">Channel</div>
+    <div id="dial">
+      <button class="channel-btn active" data-tier="sportscenter">SportsCenter</button>
+      <button class="channel-btn" data-tier="tmz">TMZ Tabloid</button>
+      <button class="channel-btn" data-tier="naturedoc">Nature Doc</button>
+      <button class="channel-btn" data-tier="breakingnews">Breaking News</button>
+      <button class="channel-btn" data-tier="realitytv">Reality TV</button>
+    </div>
+    <button class="go-live-btn" id="goLiveBtn">Go Live</button>
+  </div>
+
+  <!-- Chat -->
+  <div class="col">
+    <div class="section-label">Tell it about your day</div>
+    <div class="chat-thread" id="chatThread"></div>
+    <div id="imgPreviewName"></div>
+    <div class="chat-input-row">
+      <button class="icon-btn" id="attachBtn" title="Attach screenshot">📎</button>
+      <input type="file" id="imgInput" accept="image/*" style="display:none">
+      <textarea id="chatInput" placeholder="Type here..."></textarea>
+      <button class="icon-btn" id="sendBtn" title="Send">➤</button>
+    </div>
+  </div>
+
+  <!-- Broadcast + history -->
+  <div class="col">
+    <div class="section-label">On air</div>
+    <div class="viewer" id="viewer"><div class="placeholder">Chat a bit, then hit Go Live.</div></div>
+    <div class="section-label">Past broadcasts</div>
+    <div id="historyList"></div>
+  </div>
+
+</div>
+
+<script>
+  const CHANNEL_LABELS = {
+    sportscenter: 'SPORTSCENTER', tmz: 'TMZ TABLOID', naturedoc: 'NATURE DOC',
+    breakingnews: 'BREAKING NEWS', realitytv: 'REALITY TV',
+  };
+
+  let currentTier = 'sportscenter';
+  let conversation = []; // { role: 'user'|'ai', text, imageBase64? }
+  let pendingImage = null;
+
+  const body = document.body;
+  const dial = document.getElementById('dial');
+  const chatThread = document.getElementById('chatThread');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const attachBtn = document.getElementById('attachBtn');
+  const imgInput = document.getElementById('imgInput');
+  const imgPreviewName = document.getElementById('imgPreviewName');
+  const goLiveBtn = document.getElementById('goLiveBtn');
+  const viewer = document.getElementById('viewer');
+  const historyList = document.getElementById('historyList');
+
+  dial.addEventListener('click', (e) => {
+    const btn = e.target.closest('.channel-btn');
+    if (!btn) return;
+    currentTier = btn.dataset.tier;
+    body.setAttribute('data-tier', currentTier);
+    [...dial.children].forEach(c => c.classList.toggle('active', c === btn));
+  });
+
+  attachBtn.addEventListener('click', () => imgInput.click());
+  imgInput.addEventListener('change', () => {
+    const file = imgInput.files[0];
+    if (!file) return;
+    imgPreviewName.textContent = 'Attached: ' + file.name;
+    const reader = new FileReader();
+    reader.onload = () => { pendingImage = reader.result.split(',')[1]; };
+    reader.readAsDataURL(file);
+  });
+
+  sendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  async function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text && !pendingImage) return;
+
+    const userMsg = { role: 'user', text, imageBase64: pendingImage };
+    conversation.push(userMsg);
+    renderMessage(userMsg);
+
+    chatInput.value = '';
+    const imageSent = pendingImage;
+    pendingImage = null;
+    imgPreviewName.textContent = '';
+    imgInput.value = '';
+
+    const thinkingEl = renderMessage({ role: 'ai', text: 'typing...' });
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'chat', history: conversation }),
+      });
+      const data = await res.json();
+      thinkingEl.querySelector('.msg') ? null : null;
+      const reply = data.error ? ('Error: ' + data.error) : data.reply;
+      thinkingEl.remove();
+      const aiMsg = { role: 'ai', text: reply };
+      conversation.push(aiMsg);
+      renderMessage(aiMsg);
+    } catch (err) {
+      thinkingEl.remove();
+      renderMessage({ role: 'ai', text: "Couldn't reach the model. Try again." });
+    }
+  }
+
+  function renderMessage(msg) {
+    const wrap = document.createElement('div');
+    wrap.className = 'msg ' + (msg.role === 'user' ? 'user' : 'ai');
+    const textEl = document.createElement('div');
+    textEl.textContent = msg.text;
+    wrap.appendChild(textEl);
+    if (msg.imageBase64) {
+      const img = document.createElement('img');
+      img.src = 'data:image/jpeg;base64,' + msg.imageBase64;
+      wrap.appendChild(img);
+    }
+    chatThread.appendChild(wrap);
+    chatThread.scrollTop = chatThread.scrollHeight;
+    return wrap;
+  }
+
+  goLiveBtn.addEventListener('click', async () => {
+    if (conversation.length === 0) {
+      alert('Chat a little about your day first.');
+      return;
+    }
+    goLiveBtn.disabled = true;
+    goLiveBtn.textContent = 'GOING LIVE...';
+    viewer.innerHTML = '<div class="placeholder">Producing segment...</div>';
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'broadcast', history: conversation, tier: currentTier }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        viewer.innerHTML = `<div class="placeholder">Failed: ${data.error}</div>`;
+        return;
+      }
+      renderStory(data.story, currentTier);
+      saveToHistory(data.story, currentTier);
+    } catch (err) {
+      viewer.innerHTML = '<div class="placeholder">Could not reach the broadcast desk.</div>';
+    } finally {
+      goLiveBtn.disabled = false;
+      goLiveBtn.textContent = 'Go Live';
+    }
+  });
+
+  function renderStory(story, tier) {
+    viewer.innerHTML = `
+      <div class="viewer-tag">${CHANNEL_LABELS[tier]}</div>
+      <div class="story-text">${escapeHtml(story)}</div>
+    `;
+  }
+
+  function escapeHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function saveToHistory(story, tier) {
+    const history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
+    history.unshift({ story, tier, ts: Date.now() });
+    localStorage.setItem('broadcastHistory', JSON.stringify(history.slice(0, 50)));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
+    if (history.length === 0) {
+      historyList.innerHTML = '<div class="empty-note">No past broadcasts yet.</div>';
+      return;
+    }
+    historyList.innerHTML = history.map((item, i) => `
+      <div class="history-item" data-index="${i}">
+        <div class="h-tier">${CHANNEL_LABELS[item.tier]} · ${new Date(item.ts).toLocaleDateString()}</div>
+        <div class="h-preview">${escapeHtml(item.story.slice(0, 100))}</div>
+      </div>
+    `).join('');
+    [...historyList.children].forEach((el, i) => {
+      el.addEventListener('click', () => renderStory(history[i].story, history[i].tier));
+    });
+  }
+
+  renderHistory();
+</script>
+</body>
+</html>
