@@ -80,7 +80,6 @@ async function generateImage(prompt) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { responseModalities: ["IMAGE"] },
     }),
   });
 
@@ -89,7 +88,12 @@ async function generateImage(prompt) {
 
   const parts = data.candidates?.[0]?.content?.parts || [];
   const imagePart = parts.find((p) => p.inlineData);
-  if (!imagePart) return null;
+  if (!imagePart) {
+    // Log the raw shape so we can see in Vercel's logs what actually came back
+    // instead of guessing — this is temporary for debugging.
+    console.error("No image part in Gemini response:", JSON.stringify(data).slice(0, 800));
+    return null;
+  }
 
   return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
 }
@@ -145,13 +149,16 @@ Respond with ONLY valid JSON, no markdown code fences, no extra commentary, in e
       }
 
       // Generate a custom image matching this specific story. If it fails
-      // for any reason, we just skip it — the frontend falls back to the
-      // fixed per-channel background photo instead of breaking the whole broadcast.
+      // for any reason, we still show the broadcast (with the fallback photo)
+      // instead of breaking the whole thing — but we surface the reason in
+      // imageError so we can actually see what went wrong, temporarily.
       try {
         const imagePrompt = `Cinematic, moody, dramatic lighting, dark background with red accent lighting, photographic style, high contrast, no text, no logos, no readable words in the image, 16:9. Scene: ${persona.imageScene}, symbolically representing this headline: "${parsed.headline}"`;
         parsed.image = await generateImage(imagePrompt);
+        if (!parsed.image) parsed.imageError = "No image returned by the model — check Vercel logs for the raw response.";
       } catch (e) {
         parsed.image = null;
+        parsed.imageError = e.message || "Unknown image generation error";
       }
 
       return res.status(200).json(parsed);

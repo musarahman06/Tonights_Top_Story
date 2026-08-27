@@ -385,6 +385,7 @@
       renderArticle(data, currentTier);
       saveToHistory(data, currentTier);
       speak(data.main);
+      if (data.imageError) console.warn('Image generation issue:', data.imageError);
     } catch (err) {
       articleInner.innerHTML = '<div class="article-placeholder">Could not reach the broadcast desk.</div>';
     } finally {
