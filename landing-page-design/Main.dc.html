@@ -1,0 +1,364 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0a0a0c; --bg2:#0f0f13; --red:#ff2d4d; --red-dim:#ff2d4d22;
+      --white:#ffffff; --ink-dim:#9a9ba3; --line:#232329; --card:#131318;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0; background:#0a0a0c;}
+    .lp{
+      width:100%; background:var(--bg); color:var(--white);
+      font-family:'Inter',system-ui,sans-serif; overflow:hidden;
+      background-image:radial-gradient(ellipse 1100px 620px at 50% -8%, #ff2d4d2e, transparent 62%);
+      background-repeat:no-repeat;
+    }
+    .lp a{color:var(--red); text-decoration:none;}
+    .lp a:hover{color:#ff5c74;}
+    .wrap{max-width:1280px; margin:0 auto; padding:0 100px;}
+
+    .nav{display:flex; align-items:center; justify-content:space-between; padding:24px 100px; max-width:1280px; margin:0 auto;}
+    .wordmark{font-weight:800; font-size:17px; letter-spacing:-.2px;}
+    .wordmark b{color:var(--red); font-weight:800;}
+    .nav-links{display:flex; align-items:center; gap:26px; font-size:13.5px; color:var(--ink-dim); font-weight:500;}
+    .btn{
+      display:inline-flex; align-items:center; gap:9px; background:var(--red); color:var(--white);
+      font-weight:700; font-size:14px; border:none; padding:13px 24px; border-radius:999px; cursor:pointer;
+      box-shadow:0 10px 30px -10px #ff2d4d99; font-family:inherit;
+    }
+    .btn.ghost{background:transparent; color:var(--white); border:1px solid var(--line); box-shadow:none;}
+    .btn svg{width:16px; height:16px;}
+
+    .hero{text-align:center; padding:64px 0 30px;}
+    .kicker{font-size:12px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:1.8px; margin-bottom:18px;}
+    .hero h1{font-size:62px; font-weight:900; letter-spacing:-2px; line-height:1.04; margin:0 auto 22px; max-width:760px;}
+    .hero p{color:var(--ink-dim); font-size:17px; line-height:1.62; max-width:560px; margin:0 auto 30px;}
+    .hero-cta{display:flex; gap:14px; justify-content:center; align-items:center;}
+    .fineprint{margin-top:20px; font-size:12.5px; color:#6f7079;}
+
+    .dial{max-width:920px; margin:26px auto 0; text-align:center;}
+    .dial-row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+    .pill{
+      background:var(--card); border:1px solid var(--line); color:var(--ink-dim);
+      padding:11px 18px; border-radius:999px; font-size:13px; font-weight:600;
+    }
+    .pill .num{color:var(--red); font-weight:700; margin-right:7px;}
+    .pill.active{background:var(--red); border-color:var(--red); color:var(--white);}
+    .pill.active .num{color:var(--white);}
+    .dial-cap{margin-top:14px; font-size:13px; color:#6f7079;}
+
+    section{padding:64px 0;}
+    .sec-head{text-align:center; margin-bottom:44px;}
+    .sec-head .kicker{margin-bottom:12px;}
+    .sec-head h2{font-size:34px; font-weight:800; letter-spacing:-.8px; margin:0;}
+    .sec-head p{color:var(--ink-dim); font-size:15px; margin:12px auto 0; max-width:480px; line-height:1.6;}
+
+    .steps{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px;}
+    .step{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:26px;}
+    .step .n{font-size:12px; font-weight:800; color:var(--red); letter-spacing:1px;}
+    .step h3{font-size:18px; font-weight:700; margin:12px 0 8px; letter-spacing:-.3px;}
+    .step p{color:var(--ink-dim); font-size:13.5px; line-height:1.62; margin:0;}
+
+    .channels{display:flex; flex-direction:column; gap:14px;}
+    .chan{display:flex; gap:22px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; overflow:hidden;}
+    .chan img{width:230px; height:150px; object-fit:cover; border-radius:12px; flex-shrink:0;}
+    .chan .c-body{flex:1; min-width:0;}
+    .chan .c-tag{font-size:11px; font-weight:800; color:var(--red); letter-spacing:1.2px; text-transform:uppercase;}
+    .chan .c-tag .cn{color:var(--ink-dim); margin-right:8px;}
+    .chan .c-headline{font-family:'Merriweather',Georgia,serif; font-size:19px; font-weight:700; line-height:1.32; margin:9px 0 8px; letter-spacing:-.2px;}
+    .chan .c-when{font-size:13px; color:var(--ink-dim); line-height:1.55;}
+
+    .segment{background:var(--card); border:1px solid var(--line); border-radius:22px; padding:26px; max-width:760px; margin:0 auto;}
+    .segment .live-tag{display:inline-flex; align-items:center; gap:7px; font-size:11px; font-weight:800; color:var(--red); letter-spacing:1.4px; text-transform:uppercase; margin-bottom:16px;}
+    .segment .dot{width:7px; height:7px; border-radius:50%; background:var(--red); display:inline-block;}
+    .segment .seg-photo{width:100%; height:250px; object-fit:cover; border-radius:14px; display:block; margin-bottom:20px;}
+    .segment h3{font-size:26px; font-weight:800; line-height:1.22; letter-spacing:-.5px; margin:0 0 8px;}
+    .segment .seg-meta{font-size:12px; color:var(--ink-dim); margin-bottom:18px;}
+    .segment .seg-meta .chn{color:var(--red); font-weight:700;}
+    .segment .seg-text{font-family:'Merriweather',Georgia,serif; font-size:15.5px; line-height:1.85; color:#d6d6da; white-space:pre-line;}
+    .seg-sidebars{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:22px;}
+    .sb{background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+    .sb .sb-l{font-size:10.5px; font-weight:800; color:var(--red); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px;}
+    .sb .sb-t{font-size:13px; line-height:1.55; color:#c7c7cc;}
+
+    .dials3{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px;}
+    .d3{border:1px solid var(--line); border-radius:16px; padding:22px; background:var(--card);}
+    .d3.mid{border-color:var(--red); background:var(--red-dim);}
+    .d3 .d3-h{display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700;}
+    .d3 .badge{font-size:10px; font-weight:800; letter-spacing:.6px; color:var(--white); background:var(--red); padding:3px 8px; border-radius:999px; text-transform:uppercase;}
+    .d3 p{color:var(--ink-dim); font-size:13px; line-height:1.62; margin:12px 0 0;}
+
+    .inputs{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:20px;}
+    .inp{display:flex; flex-direction:column; gap:12px; align-items:flex-start; padding:22px; border:1px solid var(--line); border-radius:16px; background:var(--card);}
+    .inp .ico{width:40px; height:40px; border-radius:11px; background:var(--bg2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--red);}
+    .inp .ico svg{width:20px; height:20px;}
+    .inp h3{font-size:15px; font-weight:700; margin:0;}
+    .inp p{font-size:13px; color:var(--ink-dim); line-height:1.6; margin:0;}
+
+    .faq{max-width:760px; margin:0 auto; display:flex; flex-direction:column;}
+    .qa{padding:20px 0; border-top:1px solid var(--line);}
+    .qa:last-child{border-bottom:1px solid var(--line);}
+    .qa h3{font-size:15.5px; font-weight:700; margin:0 0 7px;}
+    .qa p{font-size:14px; color:var(--ink-dim); line-height:1.65; margin:0;}
+
+    .final{text-align:center; padding:80px 0;}
+    .final h2{font-size:40px; font-weight:900; letter-spacing:-1.2px; margin:0 0 26px; line-height:1.1;}
+
+    footer{border-top:1px solid var(--line); padding:36px 100px; max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+    footer .f-tag{font-size:13px; color:var(--ink-dim);}
+    footer .f-links{display:flex; gap:20px; font-size:13px; color:var(--ink-dim);}
+  </style>
+</helmet>
+
+<div class="lp">
+
+  <nav class="nav">
+    <div class="wordmark">The Daily <b>Broadcast</b></div>
+    <div class="nav-links">
+      <span>The Dial</span>
+      <span>Sample Segments</span>
+      <span>Satire Settings</span>
+      <button class="btn ghost">Open the app</button>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="hero">
+      <div class="kicker">Your Day, On The Air</div>
+      <h1>Turn today into tonight's top story.</h1>
+      <p>Tell The Daily Broadcast what happened — type it, talk it, or paste a screenshot. Pick one of five channels. Hit Go Live and your ordinary day comes back as a segment with a headline, a cover photo, and correspondents who take it far too seriously.</p>
+      <div class="hero-cta">
+        <button class="btn">
+          Start broadcasting
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </button>
+        <button class="btn ghost">Watch a sample segment</button>
+      </div>
+      <div class="fineprint">No account needed to try it. [YOUR PRICE] when you want the full newsroom.</div>
+    </div>
+
+    <div class="dial">
+      <div class="dial-row">
+        <span class="pill active"><span class="num">01</span>SportsCenter</span>
+        <span class="pill"><span class="num">02</span>TMZ Tabloid</span>
+        <span class="pill"><span class="num">03</span>Nature Doc</span>
+        <span class="pill"><span class="num">04</span>Breaking News</span>
+        <span class="pill"><span class="num">05</span>Reality TV</span>
+      </div>
+      <div class="dial-cap">Same day. Five completely different newsrooms.</div>
+    </div>
+
+    <section>
+      <div class="sec-head">
+        <div class="kicker">How it goes live</div>
+        <h2>Three steps, one segment.</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="n">01</div>
+          <h3>Dump the day</h3>
+          <p>Ranting, bullet points, a voice memo on the walk home, a screenshot of the thread that ruined your afternoon. It all counts as notes.</p>
+        </div>
+        <div class="step">
+          <div class="n">02</div>
+          <h3>Pick a channel</h3>
+          <p>SportsCenter for the win. TMZ if there was drama. Nature Doc when you need some distance from it. Your call.</p>
+        </div>
+        <div class="step">
+          <div class="n">03</div>
+          <h3>Go Live</h3>
+          <p>A few seconds later: headline, cover photo, the full segment, and sidebar analysis that nobody asked for.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <div class="kicker">The Dial</div>
+        <h2>One boring Tuesday, five ways.</h2>
+        <p>Every channel gets the same notes about a spilled coffee, a long one-on-one, and a sad desk salad. Here's what each one filed.</p>
+      </div>
+      <div class="channels">
+        <div class="chan">
+          <img src="chan-sc.jpg" alt="Empty sports arena at night">
+          <div class="c-body">
+            <div class="c-tag"><span class="cn">01</span>SportsCenter</div>
+            <div class="c-headline">Coffee turnover at the 8-second mark: Rahman coughs it up before the 9 A.M. tip.</div>
+            <div class="c-when">For days that were basically a game you lost on a technicality.</div>
+          </div>
+        </div>
+        <div class="chan">
+          <img src="chan-tmz.jpg" alt="Red carpet event at night">
+          <div class="c-body">
+            <div class="c-tag"><span class="cn">02</span>TMZ Tabloid</div>
+            <div class="c-headline">Spotted: local man flees scene of desk salad — "dressing was on the side," pal insists.</div>
+            <div class="c-when">When there was Drama and you need it on the record.</div>
+          </div>
+        </div>
+        <div class="chan">
+          <img src="chan-nature.jpg" alt="Misty forest at dawn">
+          <div class="c-body">
+            <div class="c-tag"><span class="cn">03</span>Nature Doc</div>
+            <div class="c-headline">As the fluorescent dawn breaks over Sector 4, the male commuter begins his slow migration toward the elevator.</div>
+            <div class="c-when">For zooming out until your Tuesday looks like the circle of life.</div>
+          </div>
+        </div>
+        <div class="chan">
+          <img src="chan-news.jpg" alt="Dark newsroom control room">
+          <div class="c-body">
+            <div class="c-tag"><span class="cn">04</span>Breaking News</div>
+            <div class="c-headline">Developing: one-on-one overruns by four minutes, sources describe calendar as "unrecoverable."</div>
+            <div class="c-when">For minor inconveniences that deserve a lower-third and a countdown clock.</div>
+          </div>
+        </div>
+        <div class="chan">
+          <img src="chan-reality.jpg" alt="Empty confessional interview chair">
+          <div class="c-body">
+            <div class="c-tag"><span class="cn">05</span>Reality TV</div>
+            <div class="c-headline">"I'm not here to make friends. I'm here to hit my macros." — Confessional, 6:47 P.M.</div>
+            <div class="c-when">For when your feelings would like a producer and a talking-head chair.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <div class="kicker">On Air</div>
+        <h2>This is what lands.</h2>
+        <p>A real segment layout, filed to SportsCenter at the Medium setting.</p>
+      </div>
+      <div class="segment">
+        <div class="live-tag"><span class="dot"></span>On Air</div>
+        <img class="seg-photo" src="hero-arena.jpg" alt="Empty arena">
+        <h3>Coffee turnover at the 8-second mark</h3>
+        <div class="seg-meta"><span class="chn">SPORTSCENTER</span> · Just now</div>
+        <div class="seg-text">It was supposed to be a routine possession. Mug in the right hand, laptop bag on the left shoulder, a clean lane to the front door. Then, with the clock showing 8:51 and tip-off at 9:00, Rahman lost the handle.
+
+The coffee hit the floor. The shoes took the splash. Officials are still reviewing whether the travel violation happened before or after the spill, but the outcome was never in doubt: this drive ended in a turnover, and the crowd — one cat, unbothered — had seen enough.
+
+"You practice that carry a thousand times," said a source close to the kitchen. "And then the one morning it matters, the fundamentals just aren't there."
+
+Rahman recovered to reach the office by 9:14, but the tape doesn't lie. He'll want this one back.</div>
+        <div class="seg-sidebars">
+          <div class="sb">
+            <div class="sb-l">By the numbers</div>
+            <div class="sb-t">1 mug lost. 0 recovered. 14 minutes late. A season-worst start.</div>
+          </div>
+          <div class="sb">
+            <div class="sb-l">What's next</div>
+            <div class="sb-t">A travel mug with an actual lid, allegedly. We have heard that one before.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <div class="kicker">How sharp you want it</div>
+        <h2>You set the edge.</h2>
+        <p>One setting decides how hard the correspondents come for you. It only ever points one direction.</p>
+      </div>
+      <div class="dials3">
+        <div class="d3">
+          <div class="d3-h">Low</div>
+          <p>Warm and wholesome. Plays your day for charm, never at your expense. Safe to read to your mom.</p>
+        </div>
+        <div class="d3 mid">
+          <div class="d3-h">Medium <span class="badge">Default</span></div>
+          <p>Light teasing and a raised eyebrow. Friendly overall — but it definitely noticed.</p>
+        </div>
+        <div class="d3">
+          <div class="d3-h">High</div>
+          <p>Sharper roasting, right up to the line. It comes for you and only you — never real people, never anyone else.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <div class="kicker">Feed it anything</div>
+        <h2>However you take notes.</h2>
+      </div>
+      <div class="inputs">
+        <div class="inp">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M7 16h10"/></svg></div>
+          <h3>Type it</h3>
+          <p>A paragraph, a list, or one bitter sentence. The worse your notes, the harder the correspondents work.</p>
+        </div>
+        <div class="inp">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/></svg></div>
+          <h3>Talk it</h3>
+          <p>Hit the mic and narrate the walk home. It transcribes, then files.</p>
+        </div>
+        <div class="inp">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L5 21"/></svg></div>
+          <h3>Show it</h3>
+          <p>Screenshot the calendar, the text thread, the receipt. It reads the room.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-head">
+        <div class="kicker">Before you ask</div>
+        <h2>The obvious questions.</h2>
+      </div>
+      <div class="faq">
+        <div class="qa">
+          <h3>Does it keep my entries?</h3>
+          <p>Past broadcasts are saved in your browser so you can reread them. Nothing leaves your machine except the notes you send to generate a segment.</p>
+        </div>
+        <div class="qa">
+          <h3>Will it be mean about my actual friends?</h3>
+          <p>No. Even on High, the jokes point at you. Real people never get roasted.</p>
+        </div>
+        <div class="qa">
+          <h3>Do I have to write well?</h3>
+          <p>No. Fragments, typos, and one-word moods are all fine. That's the correspondents' problem now.</p>
+        </div>
+        <div class="qa">
+          <h3>Is this journaling or a bit?</h3>
+          <p>Both. You still wrote down your day — it just came back with a camera crew.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="final">
+    <div class="wrap">
+      <h2>Your Tuesday deserves a lower-third.</h2>
+      <button class="btn">
+        Start broadcasting
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <footer>
+    <div>
+      <div class="wordmark">The Daily <b>Broadcast</b></div>
+      <div class="f-tag">Your day, on the air.</div>
+    </div>
+    <div class="f-links">
+      <span>The Dial</span>
+      <span>Sample Segments</span>
+      <span>Satire Settings</span>
+      <span>Privacy</span>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+</body>
+</html>

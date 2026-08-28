@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1280, "h": 6300, "title": "Direction A — On Air" },
+    { "file": "FrontPage.dc.html", "x": 1440, "y": 0, "w": 1280, "h": 3150, "title": "Direction B — Front Page" },
+    { "file": "PrimeTime.dc.html", "x": 2880, "y": 0, "w": 1280, "h": 3850, "title": "Direction C — Prime Time" }
+  ],
+  "annotations": [
+    { "id": "note-a", "x": 0, "y": -230, "w": 380, "text": "DIRECTION A — “On Air”\nProduct-native. Matches the app you already built 1:1 (dark newsroom, #ff2d4d, the channel dial as hero). Ships with zero visual retooling.\nTradeoff: safe. Reads like a well-made dark AI-product page; the satire lives in the copy, not the format." },
+    { "id": "note-b", "x": 1440, "y": -230, "w": 380, "text": "DIRECTION B — “Front Page”\nThe joke is the medium: your life set as the paper of record. Cream newsprint, Playfair masthead, column rules, letters to the editor. Most memorable, most on-concept.\nTradeoff: light editorial world is a hard cut from the dark app visitors land in." },
+    { "id": "note-c", "x": 2880, "y": -230, "w": 380, "text": "DIRECTION C — “Prime Time”\nMaximalist retro cable guide. The 5 channels are the star: a real TV-listings grid of your day, per-channel colors, a headline ticker. Playful, high-energy.\nTradeoff: densest to build and maintain; furthest from the current minimal app." }
+  ],
+  "launch": { "view": "canvas" }
+}

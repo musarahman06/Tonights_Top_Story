@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --paper:#f3eee1; --paper2:#efe8d7; --ink:#191512; --ink-soft:#5c554a;
+      --rule:#c9bfa6; --red:#d21f33;
+    }
+    *{box-sizing:border-box;}
+    html,body{margin:0; background:#f3eee1;}
+    .paper{
+      width:100%; background:var(--paper); color:var(--ink);
+      font-family:'Merriweather',Georgia,serif; overflow:hidden;
+      background-image:
+        radial-gradient(circle at 12% 8%, #00000008, transparent 30%),
+        radial-gradient(circle at 88% 22%, #00000008, transparent 26%);
+    }
+    .paper a{color:var(--red); text-decoration:none;}
+    .paper a:hover{color:#a5182a;}
+    .frame{max-width:1180px; margin:0 auto; padding:34px 56px 0;}
+    .lbl{font-family:'Inter',sans-serif; text-transform:uppercase; letter-spacing:2px; font-weight:700; font-size:11px;}
+
+    /* Masthead */
+    .rule-top{border-top:3px double var(--ink); border-bottom:1px solid var(--ink); padding:5px 0; display:flex; justify-content:space-between; font-family:'Inter',sans-serif; font-size:10.5px; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-soft);}
+    .masthead{text-align:center; padding:20px 0 10px;}
+    .masthead h1{font-family:'Playfair Display',Georgia,serif; font-weight:900; font-size:82px; letter-spacing:-1px; margin:0; line-height:1;}
+    .masthead .motto{font-family:'Inter',sans-serif; text-transform:uppercase; letter-spacing:4px; font-size:11px; font-weight:600; color:var(--ink-soft); margin-top:10px;}
+    .dateline{border-top:1px solid var(--ink); border-bottom:3px double var(--ink); padding:7px 0; display:flex; justify-content:space-between; align-items:center; font-family:'Inter',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:1.5px; color:var(--ink-soft);}
+    .dateline .price{color:var(--red); font-weight:700;}
+
+    /* Lead */
+    .lead{padding:30px 0 20px; border-bottom:1px solid var(--rule);}
+    .lead .over{ text-align:center; color:var(--red); font-family:'Inter',sans-serif; font-weight:700; letter-spacing:3px; font-size:11px; text-transform:uppercase; margin-bottom:12px;}
+    .lead h2{font-family:'Playfair Display',Georgia,serif; font-weight:900; font-size:56px; line-height:1.06; letter-spacing:-.5px; text-align:center; margin:0 auto 14px; max-width:940px;}
+    .lead .deck{text-align:center; font-style:italic; font-size:17px; color:var(--ink-soft); max-width:640px; margin:0 auto 26px; line-height:1.5;}
+    .lead-grid{display:grid; grid-template-columns:1.15fr 1fr 1fr; gap:26px; margin-top:6px;}
+    .cut{margin:0;}
+    .cut img{width:100%; height:270px; object-fit:cover; filter:grayscale(1) contrast(1.12); border:1px solid var(--ink);}
+    .cut figcaption{font-family:'Inter',sans-serif; font-size:11px; color:var(--ink-soft); padding-top:6px; line-height:1.4; text-transform:uppercase; letter-spacing:.5px;}
+    .col{font-size:13.5px; line-height:1.72;}
+    .col p{margin:0 0 12px;}
+    .col p:first-child::first-letter{font-family:'Playfair Display',Georgia,serif; font-weight:900; font-size:52px; line-height:.82; float:left; padding:6px 8px 0 0;}
+    .col .jump{font-family:'Inter',sans-serif; font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:1px;}
+    .boxrule{border:1px solid var(--ink); padding:16px; background:var(--paper2);}
+    .boxrule .bh{font-family:'Playfair Display',serif; font-weight:800; font-size:17px; border-bottom:1px solid var(--ink); padding-bottom:7px; margin-bottom:10px;}
+    .idx{list-style:none; margin:0; padding:0; font-size:12.5px;}
+    .idx li{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dotted var(--rule); gap:10px;}
+    .idx li .s{font-family:'Inter',sans-serif; font-weight:700;}
+    .cta-inline{display:block; text-align:center; margin-top:14px; background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; font-size:12px; padding:12px;}
+
+    /* Sections strip */
+    .sectionhead{ text-align:center; padding:26px 0 18px;}
+    .sectionhead .k{color:var(--red); font-family:'Inter',sans-serif; font-weight:700; letter-spacing:3px; font-size:11px; text-transform:uppercase;}
+    .sectionhead h3{font-family:'Playfair Display',serif; font-weight:800; font-size:30px; margin:8px 0 0;}
+    .beats{display:grid; grid-template-columns:repeat(5,1fr); gap:0; border-top:3px double var(--ink); border-bottom:3px double var(--ink);}
+    .beat{padding:16px 14px; border-right:1px solid var(--rule);}
+    .beat:last-child{border-right:none;}
+    .beat .bn{font-family:'Inter',sans-serif; font-weight:700; font-size:10.5px; letter-spacing:1.5px; color:var(--red); text-transform:uppercase;}
+    .beat .bt{font-family:'Playfair Display',serif; font-weight:700; font-size:16px; margin:7px 0 8px; line-height:1.2;}
+    .beat p{font-size:11.5px; line-height:1.6; color:var(--ink-soft); margin:0;}
+
+    .twocol{display:grid; grid-template-columns:1fr 1fr; gap:30px; padding:30px 0; border-bottom:1px solid var(--rule);}
+    .article h4{font-family:'Playfair Display',serif; font-weight:800; font-size:22px; margin:0 0 4px; border-bottom:2px solid var(--ink); padding-bottom:8px;}
+    .article .byline{font-family:'Inter',sans-serif; font-size:10.5px; text-transform:uppercase; letter-spacing:1.5px; color:var(--ink-soft); margin:10px 0 12px;}
+    .article p{font-size:13px; line-height:1.72; margin:0 0 11px;}
+    .steps-ol{margin:0; padding:0; list-style:none; counter-reset:s;}
+    .steps-ol li{counter-increment:s; padding:12px 0 12px 44px; position:relative; border-bottom:1px dotted var(--rule); font-size:13px; line-height:1.6;}
+    .steps-ol li::before{content:counter(s); position:absolute; left:0; top:10px; font-family:'Playfair Display',serif; font-weight:900; font-size:26px; color:var(--red);}
+    .steps-ol li b{font-family:'Inter',sans-serif; font-size:12px; text-transform:uppercase; letter-spacing:1px; display:block; margin-bottom:2px;}
+
+    .letters{padding:30px 0; border-bottom:3px double var(--ink);}
+    .letters .lh{font-family:'Playfair Display',serif; font-weight:800; font-size:24px; text-align:center; margin:0 0 4px;}
+    .letters .lsub{ text-align:center; font-family:'Inter',sans-serif; font-size:10.5px; text-transform:uppercase; letter-spacing:2px; color:var(--ink-soft); margin-bottom:22px;}
+    .letters-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+    .letter p{font-size:13px; line-height:1.7; font-style:italic; margin:0 0 8px;}
+    .letter .sig{font-family:'Inter',sans-serif; font-style:normal; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--ink-soft);}
+
+    .subscribe{margin:34px 0; border:2px dashed var(--ink); padding:30px; text-align:center; background:var(--paper2);}
+    .subscribe .st{font-family:'Playfair Display',serif; font-weight:900; font-size:34px; margin:0 0 8px; letter-spacing:-.5px;}
+    .subscribe p{font-size:14px; color:var(--ink-soft); margin:0 auto 20px; max-width:460px; line-height:1.6;}
+    .subscribe .sbtn{display:inline-block; background:var(--red); color:#fff; font-family:'Inter',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:2px; font-size:13px; padding:15px 34px;}
+    .subscribe .fine{font-family:'Inter',sans-serif; font-size:10.5px; text-transform:uppercase; letter-spacing:1.5px; color:var(--ink-soft); margin-top:14px;}
+
+    .colophon{border-top:1px solid var(--ink); padding:22px 0 34px; display:flex; justify-content:space-between; font-family:'Inter',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--ink-soft); flex-wrap:wrap; gap:12px;}
+  </style>
+</helmet>
+
+<div class="paper">
+  <div class="frame">
+
+    <div class="rule-top">
+      <span>Late City Edition</span>
+      <span>Filed from your notes app</span>
+      <span>Weather: personal, scattered</span>
+    </div>
+
+    <div class="masthead">
+      <h1>The Daily Broadcast</h1>
+      <div class="motto">Five channels &nbsp;·&nbsp; One unreliable narrator &nbsp;·&nbsp; Your day, on the air</div>
+    </div>
+
+    <div class="dateline">
+      <span>Vol. I — Your Edition</span>
+      <span>[YOUR CITY] &nbsp;·&nbsp; Today</span>
+      <span class="price">Price: [YOUR PRICE]</span>
+    </div>
+
+    <div class="lead">
+      <div class="over">Front Page</div>
+      <h2>Man Has Perfectly Normal Day; Newsroom Strongly Disagrees</h2>
+      <div class="deck">He spilled a coffee and sat through a long meeting. By 7 p.m. it was a headline, a cover photo, and a segment with expert analysis.</div>
+      <div class="lead-grid">
+        <figure class="cut">
+          <img src="hero-news.jpg" alt="A dark newsroom control room">
+          <figcaption>The desk, moments before your Tuesday was declared "developing."</figcaption>
+        </figure>
+        <div class="col">
+          <p>You write down what happened — typed, spoken, or pasted in as a screenshot. That is the entire assignment. The Daily Broadcast takes it from there.</p>
+          <p>Choose a channel and the same notes are rewritten in its voice. SportsCenter calls your missed alarm a coverage bust. TMZ runs the salad as a scandal. Nature Doc lowers its voice and watches you find the stairs.</p>
+          <p>A slider decides how hard the correspondents come for you — and they only ever come for you.</p>
+          <p class="jump">Continue reading — open the app →</p>
+        </div>
+        <div>
+          <div class="boxrule">
+            <div class="bh">Inside Today's Edition</div>
+            <ul class="idx">
+              <li><span>SportsCenter</span><span class="s">01</span></li>
+              <li><span>TMZ Tabloid</span><span class="s">02</span></li>
+              <li><span>Nature Doc</span><span class="s">03</span></li>
+              <li><span>Breaking News</span><span class="s">04</span></li>
+              <li><span>Reality TV</span><span class="s">05</span></li>
+            </ul>
+            <span class="cta-inline">File your first report</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sectionhead">
+      <div class="k">The Sections</div>
+      <h3>Same Tuesday. Five desks. Five very different lead stories.</h3>
+    </div>
+    <div class="beats">
+      <div class="beat">
+        <div class="bn">01 · Sports</div>
+        <div class="bt">Coffee turnover at the 8-second mark.</div>
+        <p>Rahman coughs it up before the 9 a.m. tip. Replay officials reviewing the carry.</p>
+      </div>
+      <div class="beat">
+        <div class="bn">02 · Gossip</div>
+        <div class="bt">Spotted fleeing the scene of a desk salad.</div>
+        <p>"The dressing was on the side," a source insists. Cameras caught everything.</p>
+      </div>
+      <div class="beat">
+        <div class="bn">03 · Nature</div>
+        <div class="bt">The commuter begins his slow migration.</div>
+        <p>As fluorescent dawn breaks over Sector 4, he limps toward the elevator alone.</p>
+      </div>
+      <div class="beat">
+        <div class="bn">04 · News Desk</div>
+        <div class="bt">One-on-one overruns by four minutes.</div>
+        <p>Sources describe the afternoon calendar as "unrecoverable." Live updates to follow.</p>
+      </div>
+      <div class="beat">
+        <div class="bn">05 · Reality</div>
+        <div class="bt">"I'm not here to make friends."</div>
+        <p>"I'm here to hit my macros." — the subject, to the confessional camera, 6:47 p.m.</p>
+      </div>
+    </div>
+
+    <div class="twocol">
+      <div class="article">
+        <h4>Corrections &amp; Amplifications</h4>
+        <div class="byline">A note on editorial policy</div>
+        <p>This paper amplifies before it corrects. How much is up to you, set once, adjustable any time:</p>
+        <p><b style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:1px;">Low —</b> Warm and wholesome. The paper is fond of you. Safe to leave on the kitchen table.</p>
+        <p><b style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:1px;">Medium —</b> Light teasing, a raised eyebrow in the copy. Friendly, but it noticed. This is the house style.</p>
+        <p><b style="font-family:'Inter',sans-serif;font-size:12px;letter-spacing:1px;">High —</b> Sharper roasting, right to the line — aimed only at you. The paper never runs real people, and never punches at anyone else.</p>
+      </div>
+      <div class="article">
+        <h4>How to File Your Report</h4>
+        <div class="byline">For new contributors</div>
+        <ol class="steps-ol">
+          <li><b>Submit your notes</b>Type the day, dictate it on the walk home, or paste a screenshot of the thread. Fragments are fine.</li>
+          <li><b>Assign a desk</b>Pick one of the five channels. The notes get rewritten in that voice, at your chosen setting.</li>
+          <li><b>Send it to press</b>Hit Go Live. Seconds later: headline, cover photo, full segment, and sidebar analysis nobody requested.</li>
+          <li><b>Keep the clippings</b>Every edition is saved in your browser so you can reread the archive of your own week.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="letters">
+      <div class="lh">Letters to the Editor</div>
+      <div class="lsub">Selected correspondence — names withheld pending launch</div>
+      <div class="letters-grid">
+        <div class="letter">
+          <p>"I described a grocery run in two sentences and got a Breaking News package with a countdown clock. I have not stopped."</p>
+          <div class="sig">— [Beta reader, name TK]</div>
+        </div>
+        <div class="letter">
+          <p>"The Nature Doc channel narrated my breakup like I was a wounded elk. Somehow that helped."</p>
+          <div class="sig">— [Beta reader, name TK]</div>
+        </div>
+        <div class="letter">
+          <p>"It's the only journal I've kept for more than a week, because it makes fun of me for skipping."</p>
+          <div class="sig">— [Beta reader, name TK]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subscribe">
+      <div class="st">Start your subscription.</div>
+      <p>Your first editions are free. [YOUR PRICE] for unlimited segments, every channel, and the full archive.</p>
+      <span class="sbtn">Open The Daily Broadcast</span>
+      <div class="fine">No account needed to try it &nbsp;·&nbsp; Cancel anytime</div>
+    </div>
+
+    <div class="colophon">
+      <span>The Daily Broadcast — your day, on the air</span>
+      <span>The Dial · Sample Segments · Satire Settings · Privacy</span>
+      <span>[CONTACT EMAIL]</span>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

@@ -5,180 +5,332 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>The Daily Broadcast</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0c; --bg2: #0f0f13;
-    --red: #ff2d4d; --red-dim: #ff2d4d22;
-    --white: #ffffff; --ink-dim: #9a9ba3;
-    --line: #232329; --card: #131318;
+    --paper:#f3eee1; --paper-2:#ece4d2; --card:#f7f2e7;
+    --ink:#191512; --ink-soft:#5c554a; --ink-faint:#8a8073;
+    --rule:#c9bfa6; --red:#c11f2e;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
-    background: var(--bg); color: var(--white); font-family: 'Inter', sans-serif;
-    background-image: radial-gradient(ellipse 900px 500px at 50% -10%, #ff2d4d33, transparent 60%);
+    background: var(--paper); color: var(--ink);
+    font-family: 'Merriweather', Georgia, serif;
+    background-image:
+      radial-gradient(circle at 14% 8%, rgba(0,0,0,.018), transparent 24%),
+      radial-gradient(circle at 86% 26%, rgba(0,0,0,.018), transparent 22%);
     background-repeat: no-repeat;
   }
+  a { color: var(--red); text-decoration: none; }
+  a:hover { color: #8f1622; }
 
-  header.site-header { display: flex; align-items: center; justify-content: space-between; padding: 22px 32px; max-width: 1100px; margin: 0 auto; }
-  .wordmark { font-weight: 800; font-size: 16px; letter-spacing: -.2px; }
-  .wordmark span { color: var(--red); }
-  .top-right { display: flex; align-items: center; gap: 16px; }
-  .date-text { font-size: 12.5px; color: var(--ink-dim); }
-  .gear-btn { background: none; border: 1px solid var(--line); color: var(--ink-dim); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 14px; }
-  .gear-btn:hover { border-color: var(--red); color: var(--red); }
+  .sheet { max-width: 860px; margin: 0 auto; padding: 30px 30px 64px; }
 
-  .hero { max-width: 780px; margin: 40px auto 0; padding: 0 32px; text-align: center; }
-  .hero .kicker { font-size: 12px; font-weight: 700; color: var(--red); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
-  .hero h1 { font-size: 46px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.08; margin: 0 0 16px; }
-  .hero p { color: var(--ink-dim); font-size: 15.5px; line-height: 1.6; max-width: 480px; margin: 0 auto; }
-
-  nav.channels {
-    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-    max-width: 900px; margin: 30px auto 0; padding: 0 32px;
+  /* Masthead */
+  .masthead { text-align: center; border-bottom: 4px double var(--ink); padding-bottom: 14px; }
+  .edition-line {
+    display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    font-family: 'Inter', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--ink-soft); border-bottom: 1px solid var(--ink); padding-bottom: 7px; margin-bottom: 14px;
   }
+  .nameplate {
+    font-family: 'Playfair Display', Georgia, serif; font-weight: 900;
+    font-size: clamp(34px, 8.4vw, 70px); line-height: 1; letter-spacing: -1px; margin: 0;
+  }
+  .motto {
+    font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase;
+    letter-spacing: 3px; color: var(--ink-soft); margin-top: 11px;
+  }
+  .dateline {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+    border-top: 1px solid var(--ink); margin-top: 12px; padding-top: 9px;
+    font-family: 'Inter', sans-serif; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-soft);
+  }
+  .text-btn {
+    background: transparent; border: 1px solid var(--ink); color: var(--ink);
+    font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+    padding: 8px 13px; cursor: pointer;
+  }
+  .text-btn:hover { background: var(--ink); color: var(--paper); }
+
+  /* Section blocks */
+  .block { padding: 26px 0; border-bottom: 1px solid var(--rule); }
+  .block:last-of-type { border-bottom: none; padding-bottom: 8px; }
+  .block-head {
+    display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+    border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 14px;
+  }
+  .block-head .kick {
+    font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--red); flex-shrink: 0;
+  }
+  .block-head h2 { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 21px; margin: 0; }
+  .hint, .desk-note {
+    font-family: 'Merriweather', serif; font-style: italic; font-size: 13px;
+    color: var(--ink-soft); line-height: 1.65; margin: 12px 0 0;
+  }
+
+  /* Desk selector */
+  .desks { display: flex; flex-wrap: wrap; gap: 8px; }
   .chan-pill {
-    background: var(--card); border: 1px solid var(--line); color: var(--ink-dim);
-    padding: 10px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer;
+    background: transparent; border: 1px solid var(--ink); color: var(--ink);
+    font-family: 'Merriweather', serif; font-size: 13.5px; font-weight: 700;
+    padding: 11px 16px; min-height: 44px; cursor: pointer;
   }
-  .chan-pill .num { color: var(--red); font-weight: 700; margin-right: 6px; }
-  .chan-pill:hover { border-color: #3a3a42; color: var(--white); }
-  .chan-pill.active { background: var(--red); border-color: var(--red); color: var(--white); }
-  .chan-pill.active .num { color: var(--white); }
+  .chan-pill .num { font-family: 'Inter', sans-serif; color: var(--red); font-weight: 700; margin-right: 8px; }
+  .chan-pill:hover { background: var(--paper-2); }
+  .chan-pill.active { background: var(--ink); color: var(--paper); }
+  .chan-pill.active .num { color: var(--paper); }
 
-  .page { max-width: 780px; margin: 0 auto; padding: 40px 32px 70px; }
+  /* Newsroom / notes */
+  .notepad { border: 1px solid var(--ink); background: var(--card); padding: 16px; margin-top: 14px; }
+  .notes-log:not(:empty) { margin-bottom: 12px; }
+  .note-entry {
+    padding: 12px 0; border-bottom: 1px dotted var(--rule);
+    font-family: 'Merriweather', serif; font-size: 14.5px; line-height: 1.7;
+  }
+  .note-entry:last-child { border-bottom: none; }
+  .note-entry.prompt {
+    border-left: 2px solid var(--red); padding-left: 13px; margin-left: 1px;
+    font-style: italic; color: var(--ink-soft); font-size: 13.5px;
+  }
+  .note-entry img {
+    max-width: 220px; width: 100%; border: 1px solid var(--ink); margin-top: 9px; display: block;
+  }
 
-  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 26px; margin-bottom: 20px; }
-  .panel-label { font-size: 11.5px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  #imgPreviewName {
+    font-family: 'Inter', sans-serif; font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--ink-soft); margin: 4px 0 10px;
+  }
+  #imgPreviewName:empty { margin: 0; }
 
-  .notes-log { border-top: 1px solid var(--line); margin-bottom: 4px; }
-  .note-entry { padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; line-height: 1.6; }
-  .note-entry.prompt { color: var(--ink-dim); font-style: italic; font-size: 13.5px; }
-  .note-entry img { max-width: 220px; border-radius: 10px; margin-top: 8px; display: block; }
-
-  .compose-row { display: flex; gap: 8px; align-items: flex-end; margin-top: 16px; }
+  .compose-row { display: flex; gap: 8px; align-items: flex-end; }
   .compose-row textarea {
-    flex: 1; min-height: 50px; max-height: 140px; background: var(--bg2); border: 1px solid var(--line);
-    color: var(--white); font-family: 'Inter', sans-serif; font-size: 14.5px; padding: 13px; border-radius: 12px; resize: vertical;
+    flex: 1; min-height: 58px; max-height: 180px;
+    background: #fffdf6; border: 1px solid var(--ink); color: var(--ink);
+    font-family: 'Merriweather', serif; font-size: 14.5px; line-height: 1.6; padding: 12px; resize: vertical;
   }
-  .compose-row textarea:focus { outline: 1px solid var(--red); }
+  .compose-row textarea:focus { outline: 2px solid var(--red); outline-offset: -1px; }
+  .compose-tools { display: flex; gap: 8px; flex-shrink: 0; }
   .icon-btn {
-    background: var(--bg2); border: 1px solid var(--line); color: var(--ink-dim);
-    width: 44px; height: 44px; border-radius: 50%; cursor: pointer; font-size: 15px; flex-shrink: 0;
+    width: 44px; height: 44px; background: transparent; border: 1px solid var(--ink);
+    color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
-  .icon-btn:hover { border-color: var(--red); color: var(--red); }
-  .icon-btn.recording { background: var(--red); color: var(--white); border-color: var(--red); animation: pulse 1s infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
-  #imgPreviewName { font-size: 12px; color: var(--ink-dim); margin-top: 8px; }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .icon-btn:hover { background: var(--ink); color: var(--paper); }
+  .icon-btn.recording { background: var(--red); border-color: var(--red); color: #fff; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .55; } }
 
-  .go-live-btn {
-    background: var(--red); color: var(--white); font-weight: 700; font-size: 14px;
-    border: none; padding: 14px 30px; border-radius: 999px; cursor: pointer; margin-top: 18px;
-    box-shadow: 0 8px 24px -8px #ff2d4d88;
+  .press-btn {
+    display: block; width: 100%; margin-top: 16px;
+    background: var(--red); color: #fff; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 2px; padding: 16px;
   }
-  .go-live-btn:hover { filter: brightness(1.08); }
-  .go-live-btn:disabled { opacity: .5; cursor: not-allowed; }
+  .press-btn:hover { background: #9c1621; }
+  .press-btn:disabled { opacity: .5; cursor: not-allowed; }
 
-  .article-photo { width: 100%; height: 240px; object-fit: cover; border-radius: 14px; display: block; margin-bottom: 20px; }
-  .article-body h2 { font-size: 24px; font-weight: 800; line-height: 1.25; margin: 0 0 8px; letter-spacing: -.4px; }
-  .article-meta { font-size: 12px; color: var(--ink-dim); margin-bottom: 16px; }
+  /* Front page / article */
+  .article-placeholder {
+    border: 1px dashed var(--rule); padding: 40px 16px; text-align: center;
+    font-family: 'Merriweather', serif; font-style: italic; font-size: 13.5px; color: var(--ink-soft);
+  }
+  .article-photo {
+    width: 100%; height: 290px; object-fit: cover;
+    filter: grayscale(1) contrast(1.12); border: 1px solid var(--ink);
+    display: block; margin-bottom: 16px;
+  }
+  .article-body h2 {
+    font-family: 'Playfair Display', serif; font-weight: 900;
+    font-size: clamp(25px, 5.4vw, 36px); line-height: 1.1; letter-spacing: -.5px; margin: 0 0 8px;
+  }
+  .article-meta {
+    font-family: 'Inter', sans-serif; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--ink-soft); border-bottom: 2px solid var(--ink); padding-bottom: 12px; margin-bottom: 16px;
+  }
   .article-meta .chan { color: var(--red); font-weight: 700; }
-  .article-text { font-family: 'Merriweather', serif; font-size: 16px; line-height: 1.8; color: #d6d6da; white-space: pre-wrap; }
-  .article-placeholder { padding: 30px 4px; text-align: center; color: var(--ink-dim); font-size: 13.5px; }
+  .article-text {
+    font-family: 'Merriweather', serif; font-size: 15px; line-height: 1.85; color: var(--ink);
+    white-space: pre-wrap;
+  }
+  .article-text::first-letter {
+    font-family: 'Playfair Display', serif; font-weight: 900; font-size: 52px;
+    line-height: .82; float: left; padding: 6px 9px 0 0; color: var(--ink);
+  }
+  .sidebar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 22px; }
+  .sidebar-box { border: 1px solid var(--ink); background: var(--paper-2); padding: 14px; }
+  .sidebar-box .sb-label {
+    font-family: 'Inter', sans-serif; font-size: 9.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: var(--red); border-bottom: 1px solid var(--rule); padding-bottom: 6px; margin-bottom: 8px;
+  }
+  .sidebar-box .sb-text { font-family: 'Merriweather', serif; font-size: 12.5px; line-height: 1.6; color: var(--ink); }
 
-  .sidebar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 22px; }
-  .sidebar-box { background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
-  .sidebar-box .sb-label { font-size: 10.5px; font-weight: 800; color: var(--red); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
-  .sidebar-box .sb-text { font-size: 13px; line-height: 1.55; color: #c7c7cc; }
-
+  /* Archive / history */
   .related-card {
-    display: flex; gap: 14px; border-top: 1px solid var(--line); padding: 14px 0; cursor: pointer; align-items: center;
+    display: flex; gap: 14px; align-items: center;
+    padding: 14px 0; border-bottom: 1px dotted var(--rule); cursor: pointer;
   }
   .related-card:hover .r-headline { color: var(--red); }
-  .related-card img { width: 84px; height: 62px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+  .related-card img {
+    width: 78px; height: 58px; object-fit: cover;
+    filter: grayscale(1) contrast(1.12); border: 1px solid var(--ink); flex-shrink: 0;
+  }
   .related-card .r-info { flex: 1; min-width: 0; }
-  .related-card .r-headline { font-size: 14px; font-weight: 700; line-height: 1.35; margin-bottom: 4px; }
-  .related-card .r-meta { font-size: 11px; color: var(--ink-dim); }
+  .related-card .r-headline {
+    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 15px; line-height: 1.3; margin-bottom: 4px;
+  }
+  .related-card .r-meta {
+    font-family: 'Inter', sans-serif; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-soft);
+  }
   .delete-btn {
-    background: none; border: 1px solid var(--line); color: var(--ink-dim);
-    width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 13px; flex-shrink: 0;
+    width: 32px; height: 32px; border: 1px solid var(--rule); background: transparent;
+    color: var(--ink-soft); cursor: pointer; font-size: 13px; flex-shrink: 0;
   }
   .delete-btn:hover { border-color: var(--red); color: var(--red); }
-  .empty-note { color: var(--ink-dim); font-size: 13px; }
+  .empty-note { font-family: 'Merriweather', serif; font-style: italic; color: var(--ink-soft); font-size: 13px; padding: 10px 0; }
 
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px; }
+  .colophon {
+    margin-top: 28px; border-top: 4px double var(--ink); padding-top: 14px;
+    display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+    font-family: 'Inter', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--ink-soft);
+  }
+
+  /* Settings overlay */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(25,21,18,.55);
+    display: none; align-items: center; justify-content: center; z-index: 50; padding: 20px;
+  }
   .overlay.open { display: flex; }
-  .settings-panel { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 26px; max-width: 440px; width: 100%; max-height: 85vh; overflow-y: auto; }
-  .settings-panel h2 { font-size: 19px; font-weight: 800; margin: 0 0 4px; }
-  .settings-panel .sub { color: var(--ink-dim); font-size: 13px; margin-bottom: 18px; }
-  .intensity-option { border: 1px solid var(--line); border-radius: 12px; padding: 13px 15px; margin-bottom: 9px; cursor: pointer; }
-  .intensity-option.selected { border-color: var(--red); background: var(--red-dim); }
-  .intensity-option .i-title { font-weight: 700; font-size: 13.5px; }
-  .intensity-option .i-desc { font-size: 12.5px; color: var(--ink-dim); margin-top: 4px; line-height: 1.5; }
-  .warning-box { background: #2a0f14; border: 1px solid var(--red); border-radius: 10px; padding: 9px 11px; font-size: 11.5px; color: #ff8ba0; margin-top: 8px; display: none; }
-  .voice-toggle-row { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 13px; }
-  .close-settings { width: 100%; margin-top: 18px; background: var(--white); color: var(--bg); border: none; padding: 12px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+  .settings-panel {
+    background: var(--paper); border: 1px solid var(--ink); border-top: 5px double var(--ink);
+    box-shadow: 0 24px 70px -24px rgba(0,0,0,.45);
+    max-width: 460px; width: 100%; max-height: 86vh; overflow-y: auto; padding: 26px 28px 28px;
+  }
+  .settings-panel h2 { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 24px; margin: 4px 0 4px; }
+  .settings-panel .sub { font-family: 'Merriweather', serif; font-style: italic; font-size: 13px; color: var(--ink-soft); margin-bottom: 18px; }
+  .intensity-option { border: 1px solid var(--rule); padding: 14px; margin-bottom: 10px; cursor: pointer; }
+  .intensity-option:hover { border-color: var(--ink); }
+  .intensity-option.selected { border-color: var(--red); background: var(--paper-2); box-shadow: inset 3px 0 0 var(--red); }
+  .intensity-option .i-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 11.5px; text-transform: uppercase; letter-spacing: 1.5px; }
+  .intensity-option .i-desc { font-family: 'Merriweather', serif; font-size: 12.5px; color: var(--ink-soft); margin-top: 5px; line-height: 1.55; }
+  .warning-box {
+    border: 1px solid var(--red); background: #f4e0d5; color: #8a2b1e;
+    font-family: 'Inter', sans-serif; font-size: 11px; line-height: 1.5; padding: 10px; margin-top: 8px; display: none;
+  }
+  .voice-toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 16px; padding-top: 14px; border-top: 1px dotted var(--rule);
+    font-family: 'Inter', sans-serif; font-size: 13px;
+  }
+  .voice-toggle-row input { width: 18px; height: 18px; }
+  .close-settings {
+    width: 100%; margin-top: 18px; background: var(--ink); color: var(--paper); border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; padding: 14px;
+  }
+
+  @media (max-width: 620px) {
+    .sheet { padding: 18px 15px 48px; }
+    .block-head { gap: 6px; }
+    .sidebar-grid { grid-template-columns: 1fr; }
+    .compose-row { flex-direction: column; align-items: stretch; }
+    .compose-tools { justify-content: flex-end; }
+    .edition-line { justify-content: center; }
+  }
 </style>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="wordmark">The Daily <span>Broadcast</span></div>
-  <div class="top-right">
-    <div class="date-text" id="todayDate"></div>
-    <button class="gear-btn" id="settingsBtn" title="Settings">⚙</button>
-  </div>
-</header>
+<div class="sheet">
 
-<div class="hero">
-  <div class="kicker">Your Day, On The Air</div>
-  <h1>Turn today into tonight's top story.</h1>
-  <p>Tell it what happened — text, screenshots, or just talk. Pick a channel. Go live.</p>
-</div>
-
-<nav class="channels" id="dial">
-  <button class="chan-pill active" data-tier="sportscenter"><span class="num">01</span>SportsCenter</button>
-  <button class="chan-pill" data-tier="tmz"><span class="num">02</span>TMZ Tabloid</button>
-  <button class="chan-pill" data-tier="naturedoc"><span class="num">03</span>Nature Doc</button>
-  <button class="chan-pill" data-tier="breakingnews"><span class="num">04</span>Breaking News</button>
-  <button class="chan-pill" data-tier="realitytv"><span class="num">05</span>Reality TV</button>
-</nav>
-
-<div class="page">
-
-  <div class="panel">
-    <div class="panel-label">Today's Notes</div>
-    <div class="notes-log" id="notesLog"></div>
-    <div id="imgPreviewName"></div>
-    <div class="compose-row">
-      <textarea id="chatInput" placeholder="Start typing, or use the mic..."></textarea>
-      <button class="icon-btn" id="attachBtn" title="Attach screenshot">📎</button>
-      <input type="file" id="imgInput" accept="image/*" style="display:none">
-      <button class="icon-btn" id="micBtn" title="Voice input">🎤</button>
-      <button class="icon-btn" id="sendBtn" title="Add note">➤</button>
+  <header class="masthead">
+    <div class="edition-line">
+      <span>Late City Edition</span>
+      <span>Filed from your notes</span>
+      <span>Weather: personal, scattered</span>
     </div>
-    <button class="go-live-btn" id="goLiveBtn">Go Live</button>
-  </div>
+    <h1 class="nameplate">The Daily Broadcast</h1>
+    <div class="motto">Five desks &nbsp;·&nbsp; One unreliable narrator &nbsp;·&nbsp; Your day, on the air</div>
+    <div class="dateline">
+      <span>Vol. I — Your Edition</span>
+      <span id="todayDate"></span>
+      <button class="text-btn" id="settingsBtn">Editorial Settings</button>
+    </div>
+  </header>
 
-  <div class="panel">
-    <div class="panel-label">On Air</div>
+  <section class="block">
+    <div class="block-head">
+      <span class="kick">Step 1</span>
+      <h2>Assign the story to a desk</h2>
+    </div>
+    <nav class="desks" id="dial">
+      <button class="chan-pill active" data-tier="sportscenter"><span class="num">01</span>SportsCenter</button>
+      <button class="chan-pill" data-tier="tmz"><span class="num">02</span>TMZ Tabloid</button>
+      <button class="chan-pill" data-tier="naturedoc"><span class="num">03</span>Nature Doc</button>
+      <button class="chan-pill" data-tier="breakingnews"><span class="num">04</span>Breaking News</button>
+      <button class="chan-pill" data-tier="realitytv"><span class="num">05</span>Reality TV</button>
+    </nav>
+    <p class="desk-note">Same notes, five completely different front pages.</p>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="kick">Step 2</span>
+      <h2>File your notes</h2>
+    </div>
+    <p class="hint">Type it, talk it, or paste a screenshot. Fragments are fine — that's the correspondents' problem now.</p>
+    <div class="notepad">
+      <div class="notes-log" id="notesLog"></div>
+      <div id="imgPreviewName"></div>
+      <div class="compose-row">
+        <textarea id="chatInput" placeholder="What happened today?"></textarea>
+        <div class="compose-tools">
+          <button class="icon-btn" id="attachBtn" title="Attach a screenshot" aria-label="Attach a screenshot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+          <input type="file" id="imgInput" accept="image/*" style="display:none">
+          <button class="icon-btn" id="micBtn" title="Dictate a note" aria-label="Dictate a note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
+          </button>
+          <button class="icon-btn" id="sendBtn" title="Add note" aria-label="Add note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <button class="press-btn" id="goLiveBtn">Send to press</button>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <span class="kick">The Front Page</span>
+      <h2>Today's lead story</h2>
+    </div>
     <div id="articleInner">
-      <div class="article-placeholder">No broadcast yet — add some notes above and hit Go Live.</div>
+      <div class="article-placeholder">No edition yet — file some notes above and send it to press.</div>
     </div>
-  </div>
+  </section>
 
-  <div class="panel">
-    <div class="panel-label">Past Broadcasts</div>
+  <section class="block">
+    <div class="block-head">
+      <span class="kick">The Archive</span>
+      <h2>Back issues</h2>
+    </div>
     <div id="historyList"></div>
-  </div>
+  </section>
+
+  <footer class="colophon">
+    <span>The Daily Broadcast</span>
+    <span>Your day, on the air.</span>
+  </footer>
 
 </div>
 
 <div class="overlay" id="settingsOverlay">
   <div class="settings-panel">
-    <h2>Settings</h2>
-    <div class="sub">Choose how sharp the humor gets.</div>
+    <h2>Corrections &amp; Amplifications</h2>
+    <div class="sub">This paper amplifies before it corrects. Choose how much.</div>
 
     <div class="intensity-option" data-level="low">
       <div class="i-title">Low</div>
@@ -191,12 +343,12 @@
     <div class="intensity-option" data-level="high">
       <div class="i-title">High</div>
       <div class="i-desc">Sharper, near-the-line roasting humor.</div>
-      <div class="warning-box" id="highWarning">⚠ Heads up: High can include edgy, teasing jokes at your own expense. It still won't target real people cruelly or punch at anyone else — just turned up on you.</div>
+      <div class="warning-box" id="highWarning">Heads up: High can include edgy, teasing jokes at your own expense. It still won't target real people cruelly or punch at anyone else — just turned up on you.</div>
     </div>
 
     <div class="voice-toggle-row">
-      <span>Read broadcast aloud</span>
-      <input type="checkbox" id="readAloudToggle" style="width:18px; height:18px;">
+      <span>Read the broadcast aloud</span>
+      <input type="checkbox" id="readAloudToggle">
     </div>
 
     <button class="close-settings" id="closeSettings">Done</button>
@@ -241,7 +393,7 @@
   const readAloudToggle = document.getElementById('readAloudToggle');
   const todayDate = document.getElementById('todayDate');
 
-  todayDate.textContent = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  todayDate.textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
   dial.addEventListener('click', (e) => {
     const btn = e.target.closest('.chan-pill');
@@ -347,7 +499,7 @@
     imgPreviewName.textContent = '';
     imgInput.value = '';
 
-    const thinkingEl = addNoteEntry('...', 'prompt');
+    const thinkingEl = addNoteEntry('…', 'prompt');
 
     try {
       const res = await fetch('/api/generate', {
@@ -369,10 +521,10 @@
   }
 
   goLiveBtn.addEventListener('click', async () => {
-    if (conversation.length === 0) { alert('Add a note about your day first.'); return; }
+    if (conversation.length === 0) { alert('File at least one note first.'); return; }
     goLiveBtn.disabled = true;
-    goLiveBtn.textContent = 'Going live...';
-    articleInner.innerHTML = '<div class="article-placeholder">Producing segment...</div>';
+    goLiveBtn.textContent = 'Setting the type…';
+    articleInner.innerHTML = '<div class="article-placeholder">Setting the type…</div>';
 
     try {
       const res = await fetch('/api/generate', {
@@ -381,16 +533,16 @@
         body: JSON.stringify({ mode: 'broadcast', history: conversation, tier: currentTier, intensity: satireLevel }),
       });
       const data = await res.json();
-      if (data.error) { articleInner.innerHTML = `<div class="article-placeholder">Failed: ${data.error}</div>`; return; }
+      if (data.error) { articleInner.innerHTML = `<div class="article-placeholder">Couldn't file it: ${data.error}</div>`; return; }
       renderArticle(data, currentTier);
       saveToHistory(data, currentTier);
       speak(data.main);
       if (data.imageError) console.warn('Image generation issue:', data.imageError);
     } catch (err) {
-      articleInner.innerHTML = '<div class="article-placeholder">Could not reach the broadcast desk.</div>';
+      articleInner.innerHTML = '<div class="article-placeholder">Could not reach the wire desk.</div>';
     } finally {
       goLiveBtn.disabled = false;
-      goLiveBtn.textContent = 'Go Live';
+      goLiveBtn.textContent = 'Send to press';
     }
   });
 
@@ -407,7 +559,7 @@
       <img class="article-photo" src="${imgSrc}" alt="">
       <div class="article-body">
         <h2>${escapeHtml(storyObj.headline || '')}</h2>
-        <div class="article-meta"><span class="chan">${CHANNEL_LABELS[tier]}</span> · Just now</div>
+        <div class="article-meta"><span class="chan">${CHANNEL_LABELS[tier]} DESK</span> · Filed just now</div>
         <div class="article-text">${escapeHtml(storyObj.main || '')}</div>
         ${sidebarsHtml ? `<div class="sidebar-grid">${sidebarsHtml}</div>` : ''}
       </div>
@@ -435,7 +587,7 @@
   }
   function renderHistory() {
     const history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
-    if (history.length === 0) { historyList.innerHTML = '<div class="empty-note">No past broadcasts yet.</div>'; return; }
+    if (history.length === 0) { historyList.innerHTML = '<div class="empty-note">No back issues yet.</div>'; return; }
     historyList.innerHTML = history.map((item, i) => `
       <div class="related-card" data-index="${i}">
         <img src="${(item.storyObj && item.storyObj.image) || thumbFor(item.tier)}" alt="">
@@ -450,6 +602,7 @@
       el.addEventListener('click', (e) => {
         if (e.target.closest('.delete-btn')) return;
         renderArticle(history[i].storyObj, history[i].tier);
+        window.scrollTo({ top: articleInner.getBoundingClientRect().top + window.scrollY - 20, behavior: 'smooth' });
       });
     });
     [...historyList.querySelectorAll('.delete-btn')].forEach((btn) => {

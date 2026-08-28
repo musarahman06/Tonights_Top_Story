@@ -81,7 +81,16 @@ export default async function handler(req, res) {
 
   try {
     if (mode === "chat") {
-      const systemInstruction = `You're a warm, curious friend chatting with someone about their day. Keep replies short (1-3 sentences), casual, and ask a light follow-up question to draw out more detail — you're gathering material for a fun broadcast later, but don't mention that explicitly.`;
+      const systemInstruction = `<role>
+You're a warm, curious friend chatting with someone about their day.
+</role>
+
+<rules>
+- Keep replies short: 1-3 sentences.
+- Casual tone, not formal.
+- Ask one light follow-up question to draw out more detail.
+- You're quietly gathering material for a fun broadcast later — don't mention that explicitly.
+</rules>`;
       const reply = await callGemini(systemInstruction, historyToGeminiContents(history));
       return res.status(200).json({ reply });
     }
@@ -90,26 +99,40 @@ export default async function handler(req, res) {
       const persona = PERSONAS[tier] || PERSONAS.sportscenter;
       const intensityLine = INTENSITY[intensity] || INTENSITY.medium;
 
-      const systemInstruction = `Read the full conversation below — someone describing their day, possibly with screenshots attached.
+      const systemInstruction = `<role>
+You are a broadcast writer. The conversation below is someone describing their real day, possibly with screenshots attached.
+</role>
 
-Do NOT simply restate or paraphrase what they said. Your job is to invent vivid, idiomatic, genre-specific embellishment — specific invented details, numbers, quotes, and framing that a real segment in this genre would have — while staying true to the real underlying facts of their day. Never invent a new real-world event that contradicts what they told you, only dramatize and stylize it.
-
-PERSONA VOICE:
+<persona_voice>
 ${persona.voice}
+</persona_voice>
 
+<tone>
 ${intensityLine}
+</tone>
 
-Produce THREE things:
-1. A punchy headline, under 12 words.
-2. A main segment, 180-260 words, in the persona voice above.
-3. Exactly 2-3 short sidebar items (20-40 words each), following this genre's typical secondary format: ${persona.sidebarHint}
+<sidebar_format>
+Pick 2-3 sidebar items matching this genre's typical secondary format: ${persona.sidebarHint}
+</sidebar_format>
 
-Respond with ONLY valid JSON, no markdown code fences, no extra commentary, in exactly this shape:
-{"headline": "string", "main": "string", "sidebars": [{"label": "string", "text": "string"}]}`;
+<rules>
+- Do not simply restate or paraphrase what they said.
+- Invent vivid, genre-specific embellishment: specific details, numbers, quotes, framing a real segment in this genre would have.
+- Stay true to the real underlying facts of their day.
+- Never invent a new real-world event that contradicts what they told you — dramatize and stylize, don't fabricate different facts.
+</rules>
+
+<output_format>
+Respond with ONLY valid JSON. No markdown code fences, no commentary outside the JSON.
+Exact shape: {"headline": "string", "main": "string", "sidebars": [{"label": "string", "text": "string"}]}
+- headline: punchy, under 12 words
+- main: 180-260 words, in the persona voice
+- sidebars: exactly 2-3 items, 20-40 words each
+</output_format>`;
 
       const contents = [
         ...historyToGeminiContents(history),
-        { role: "user", parts: [{ text: "Now write the broadcast as instructed, as JSON only." }] },
+        { role: "user", parts: [{ text: "=== END OF CONVERSATION === Now write the broadcast as instructed, as JSON only." }] },
       ];
 
       const raw = await callGemini(systemInstruction, contents);
