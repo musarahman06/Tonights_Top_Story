@@ -2,6 +2,26 @@
 // Talks to Google's Gemini API (free tier). The key lives only here,
 // as a Vercel environment variable — never in the frontend code.
 
+// Per-IP rate limit, best-effort (resets on cold start, not shared across
+// instances) — just enough to stop a script from hammering the Gemini key.
+const RATE_LIMIT_WINDOW_MS = 5 * 60 * 1000;
+const RATE_LIMIT_MAX = 30;
+const rateLimitBuckets = new Map();
+
+function isRateLimited(ip) {
+  const now = Date.now();
+  for (const [key, bucket] of rateLimitBuckets) {
+    if (now - bucket.windowStart > RATE_LIMIT_WINDOW_MS) rateLimitBuckets.delete(key);
+  }
+  const bucket = rateLimitBuckets.get(ip);
+  if (!bucket) {
+    rateLimitBuckets.set(ip, { windowStart: now, count: 1 });
+    return false;
+  }
+  bucket.count += 1;
+  return bucket.count > RATE_LIMIT_MAX;
+}
+
 const PERSONAS = {
   sportscenter: {
     voice: `High-energy sports anchor doing a nightly recap. Confident, punchy, present-tense excitement. Frame the day's events as a game: comeback, upset, overtime, MVP, clutch. Invent a plausible "final score," a nickname for the person, and quote-style soundbites — the kind of specific, vivid detail a real broadcast has, not a summary of what happened.`,
@@ -73,6 +93,11 @@ function extractJson(raw) {
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST." });
+
+  const ip = (req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown").split(",")[0].trim();
+  if (isRateLimited(ip)) {
+    return res.status(429).json({ error: "Too many requests — take a breather and try again in a few minutes." });
+  }
 
   const { mode, history, tier, intensity } = req.body || {};
   if (!history || history.length === 0) {

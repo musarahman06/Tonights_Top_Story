@@ -1,4 +1,4 @@
-# The Daily Broadcast
+# Tonight's Top Story
 
 Chat with the AI about your day (text and screenshots both work), pick a
 channel, hit Go Live — it turns the conversation into a short satirical
