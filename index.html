@@ -188,6 +188,14 @@
     width: 32px; height: 32px; border: 1px solid var(--rule); background: transparent;
     color: var(--ink-soft); cursor: pointer; font-size: 13px; flex-shrink: 0;
   }
+  .share-btn {
+    width: 32px; height: 32px; border: 1px solid var(--rule); background: transparent;
+    color: var(--ink-soft); cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .share-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .share-btn svg { width: 15px; height: 15px; }
+  .share-btn:disabled { opacity: .5; cursor: not-allowed; }
   .delete-btn:hover { border-color: var(--red); color: var(--red); }
   .empty-note { font-family: 'Merriweather', serif; font-style: italic; color: var(--ink-soft); font-size: 13px; padding: 10px 0; }
 
@@ -239,6 +247,7 @@
     .edition-line { justify-content: center; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -306,6 +315,7 @@
     <div class="block-head">
       <span class="kick">The Front Page</span>
       <h2>Today's lead story</h2>
+      <button class="text-btn" id="shareArticleBtn" style="margin-left:auto;" disabled>Share as Image</button>
     </div>
     <div id="articleInner">
       <div class="article-placeholder">No edition yet — file some notes above and send it to press.</div>
@@ -546,7 +556,10 @@
     }
   });
 
-  function renderArticle(storyObj, tier) {
+  let currentStory = null;
+  let currentStoryTier = null;
+
+  function buildArticleMarkup(storyObj, tier) {
     const sidebarsHtml = (storyObj.sidebars || []).map(sb => `
       <div class="sidebar-box">
         <div class="sb-label">${escapeHtml(sb.label || '')}</div>
@@ -555,8 +568,8 @@
 
     const imgSrc = storyObj.image || photoFor(tier);
 
-    articleInner.innerHTML = `
-      <img class="article-photo" src="${imgSrc}" alt="">
+    return `
+      <img class="article-photo" src="${imgSrc}" alt="" crossorigin="anonymous">
       <div class="article-body">
         <h2>${escapeHtml(storyObj.headline || '')}</h2>
         <div class="article-meta"><span class="chan">${CHANNEL_LABELS[tier]} DESK</span> · Filed just now</div>
@@ -565,7 +578,57 @@
       </div>
     `;
   }
+  function renderArticle(storyObj, tier) {
+    articleInner.innerHTML = buildArticleMarkup(storyObj, tier);
+    currentStory = storyObj;
+    currentStoryTier = tier;
+    shareArticleBtn.disabled = false;
+  }
   function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  async function shareStoryAsImage(storyObj, tier, triggerBtn) {
+    if (!window.html2canvas) { alert("Image sharing isn't available right now — try again in a moment."); return; }
+    if (triggerBtn) triggerBtn.disabled = true;
+
+    const capture = document.createElement('div');
+    capture.style.cssText = 'position:fixed; left:-9999px; top:0; width:600px; background:#f3eee1; padding:24px;';
+    capture.innerHTML = buildArticleMarkup(storyObj, tier);
+    document.body.appendChild(capture);
+
+    try {
+      const canvas = await html2canvas(capture, { backgroundColor: '#f3eee1', scale: 2, useCORS: true });
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('No image produced.');
+
+      const safeName = (storyObj.headline || 'broadcast').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'broadcast';
+      const filename = `${safeName}.png`;
+      const file = new File([blob], filename, { type: 'image/png' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: storyObj.headline || "Tonight's Top Story" });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+      }
+    } catch (err) {
+      if (err && err.name !== 'AbortError') alert("Couldn't create the image. Try again.");
+    } finally {
+      capture.remove();
+      if (triggerBtn) triggerBtn.disabled = false;
+    }
+  }
+
+  const shareArticleBtn = document.getElementById('shareArticleBtn');
+  shareArticleBtn.addEventListener('click', () => {
+    if (!currentStory) return;
+    shareStoryAsImage(currentStory, currentStoryTier, shareArticleBtn);
+  });
 
   function saveToHistory(storyObj, tier) {
     let history = JSON.parse(localStorage.getItem('broadcastHistory') || '[]');
@@ -595,12 +658,15 @@
           <div class="r-headline">${escapeHtml((item.storyObj && item.storyObj.headline) || '')}</div>
           <div class="r-meta">${CHANNEL_LABELS[item.tier]} · ${new Date(item.ts).toLocaleDateString()}</div>
         </div>
+        <button class="share-btn" data-share-index="${i}" title="Share as image" aria-label="Share as image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9"/></svg>
+        </button>
         <button class="delete-btn" data-delete-index="${i}" title="Delete">✕</button>
       </div>`).join('');
 
     [...historyList.querySelectorAll('.related-card')].forEach((el, i) => {
       el.addEventListener('click', (e) => {
-        if (e.target.closest('.delete-btn')) return;
+        if (e.target.closest('.delete-btn') || e.target.closest('.share-btn')) return;
         renderArticle(history[i].storyObj, history[i].tier);
         window.scrollTo({ top: articleInner.getBoundingClientRect().top + window.scrollY - 20, behavior: 'smooth' });
       });
@@ -609,6 +675,13 @@
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         deleteFromHistory(parseInt(btn.dataset.deleteIndex, 10));
+      });
+    });
+    [...historyList.querySelectorAll('.share-btn')].forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const item = history[parseInt(btn.dataset.shareIndex, 10)];
+        shareStoryAsImage(item.storyObj, item.tier, btn);
       });
     });
   }
